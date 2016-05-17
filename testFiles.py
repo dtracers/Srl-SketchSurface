@@ -17,7 +17,7 @@
 import webapp2
 import os
 
-testDir = 'src/test/src/'
+testDir = 'src/test/web/'
 
 class MainPage(webapp2.RequestHandler):
 
@@ -41,7 +41,7 @@ class MainPage(webapp2.RequestHandler):
     def searchTestFiles(self):
         fileList = []
         failedList = []
-        directory = 'src/test/src/'
+        directory = testDir
         absPath = os.path.abspath(directory)
         self.response.write('looking at files in directory ' + directory + ' <br>')
         counter = 1
