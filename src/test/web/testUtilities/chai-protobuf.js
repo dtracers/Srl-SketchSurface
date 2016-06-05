@@ -5,6 +5,9 @@ define('chai-protobuf', ['generated_proto/commands', 'protobufUtils/sketchProtoC
      * Returns a cleaned version of the update that is ready for comparison.
      */
     function cleanUpdateForComparison(update) {
+        if (typeof update === 'undefined') {
+            throw "Update can not be undefined";
+        }
         return ProtoUtil.decode(update.toArrayBuffer(), Commands.SrlUpdate);
     }
 

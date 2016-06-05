@@ -55,6 +55,8 @@ require(['DefaultSketchCommands', 'UpdateManager', 'generated_proto/commands',
         Commands.SrlCommand.addUndoMethod(Commands.CommandType.SWITCH_SKETCH, function () {
             return true;
         });
+
+        var onErrorCallback = RequireTest.createErrorCallback(expect);
         var MinListNumber = 10;
         describe('test', function () {
             var cleanFakeSketch;
@@ -100,10 +102,7 @@ require(['DefaultSketchCommands', 'UpdateManager', 'generated_proto/commands',
                 });
 
                 it("get Clean list returns the same list but different objects", function (done) {
-                    var updateList = new UpdateManager(undefined, function (error) {
-                        console.log(error);
-                        expect(false).to.equal(true, '' + error);
-                    });
+                    var updateList = new UpdateManager(undefined, RequireTest.createErrorCallback(expect, done));
                     Commands.SrlCommand.addRedoMethod(Commands.CommandType.ASSIGN_ATTRIBUTE, function () {
                         return false;
                     });
@@ -146,14 +145,7 @@ require(['DefaultSketchCommands', 'UpdateManager', 'generated_proto/commands',
 
                 it("setUpdateList creates the updates in the correct order", function () {
                     var clock = sinon.useFakeTimers();
-                    var updateList = new UpdateManager({
-                        getCurrentSketch: function () {
-                            return cleanFakeSketch;
-                        }
-                    }, function (error) {
-                        console.log(error);
-                        expect(false).to.equal(true, '' + error);
-                    });
+                    var updateList = new UpdateManager(cleanFakeSketchManager, onErrorCallback);
 
                     var localUpdateList = new Array();
                     for (var i = 0; i < MinListNumber; i++) {
@@ -190,14 +182,7 @@ require(['DefaultSketchCommands', 'UpdateManager', 'generated_proto/commands',
 
                 it("setUpdateList calls with the correct values", function () {
                     var clock = sinon.useFakeTimers();
-                    var updateList = new UpdateManager({
-                        getCurrentSketch: function () {
-                            return cleanFakeSketch;
-                        }
-                    }, function (error) {
-                        console.log(error);
-                        expect(false).to.equal(true, '' + error);
-                    });
+                    var updateList = new UpdateManager(cleanFakeSketchManager, onErrorCallback);
 
                     var localUpdateList = new Array();
                     for (var i = 0; i < MinListNumber; i++) {
@@ -252,11 +237,7 @@ require(['DefaultSketchCommands', 'UpdateManager', 'generated_proto/commands',
                 });
 
                 it("testing adding an update Marker.SUBMISSION And test the last update is submission", function (done) {
-                    var updateList = new UpdateManager(undefined, function (error) {
-                        console.log(error);
-                        expect(false).to.equal(true, '' + error);
-                        done();
-                    });
+                    var updateList = new UpdateManager(undefined, RequireTest.createErrorCallback(expect, done));
 
                     expect(updateList.isLastUpdateSubmission(), "there are no submissions before the marker submission is added").to.be.false;
 
@@ -268,22 +249,14 @@ require(['DefaultSketchCommands', 'UpdateManager', 'generated_proto/commands',
                 });
 
                 it("testing isValidForSubmission with empty list", function (done) {
-                    var updateList = new UpdateManager(undefined, function (error) {
-                        console.log(error);
-                        expect(false).to.equal(true, '' + error);
-                        done();
-                    });
+                    var updateList = new UpdateManager(undefined, RequireTest.createErrorCallback(expect, done));
                     expect(updateList.isValidForSubmission()).withMessage("empty list are not valid for submissions").to.be.false;
                     done();
                 });
 
                 it("testing isValidForSubmission with last item being a submission marker", function (done) {
 
-                    var updateList = new UpdateManager(undefined, function (error) {
-                        console.log(error);
-                        expect(false).to.equal(true, '' + error);
-                        done();
-                    });
+                    var updateList = new UpdateManager(undefined, RequireTest.createErrorCallback(expect, done));
 
                     var markerObject = updateList.createMarker(true, Commands.Marker.MarkerType.SUBMISSION, "pounded you to submission");
                     var update = CommandUtil.createUpdateFromCommands([markerObject]);
@@ -295,11 +268,7 @@ require(['DefaultSketchCommands', 'UpdateManager', 'generated_proto/commands',
 
                 it("testing isValidForSubmission with last item being a submission marker", function (done) {
 
-                    var updateList = new UpdateManager(undefined, function (error) {
-                        console.log(error);
-                        expect(false).to.equal(true, '' + error);
-                        done();
-                    });
+                    var updateList = new UpdateManager(undefined, RequireTest.createErrorCallback(expect, done));
 
                     var markerObject = updateList.createMarker(true, Commands.Marker.MarkerType.SAVE, "pounded you to saving");
                     var update = CommandUtil.createUpdateFromCommands([markerObject]);
@@ -313,7 +282,6 @@ require(['DefaultSketchCommands', 'UpdateManager', 'generated_proto/commands',
             describe("addUpdateTest", function () {
                 it("testing adding an empty update should throw an exception", function (done) {
                     var updateList = new UpdateManager(undefined, function (error) {
-                        console.log(error);
                         expect(error).to.be.an.instanceof(UpdateManagerModule.UpdateException);
                         done();
                     });
@@ -328,11 +296,7 @@ require(['DefaultSketchCommands', 'UpdateManager', 'generated_proto/commands',
                     stub.returns(false); // we are not drawing.
 
                     Commands.SrlCommand.addRedoMethod(Commands.CommandType.ASSIGN_ATTRIBUTE, stub);
-                    var updateList = new UpdateManager(undefined, function (error) {
-                        console.log(error);
-                        expect(false).to.equal(true, '' + error);
-                        done();
-                    });
+                    var updateList = new UpdateManager(undefined, RequireTest.createErrorCallback(expect, done));
                     var markerObject = CommandUtil.createBaseCommand(Commands.CommandType.ASSIGN_ATTRIBUTE, true);
                     var update = CommandUtil.createUpdateFromCommands([markerObject]);
                     updateList.addUpdate(update);
@@ -342,11 +306,7 @@ require(['DefaultSketchCommands', 'UpdateManager', 'generated_proto/commands',
 
                 it("testing adding an update Marker.SUBMISSION after adding SAVE And test the last update is submission", function (done) {
 
-                    var updateList = new UpdateManager(undefined, function (error) {
-                        console.log(error);
-                        expect(false).to.equal(true, '' + error);
-                        done();
-                    });
+                    var updateList = new UpdateManager(undefined, RequireTest.createErrorCallback(expect, done));
 
                     expect(updateList.isLastUpdateSubmission())
                         .withMessage("there are no submissions before the marker submission is added").to.be.false;
@@ -372,10 +332,7 @@ require(['DefaultSketchCommands', 'UpdateManager', 'generated_proto/commands',
                     var clock = sinon.useFakeTimers();
 
                     this.sketchManager = new SketchSurfaceManager();
-                    var updateList = new UpdateManager(cleanFakeSketchManager, function (error) {
-                        console.log(error);
-                        expect(false).to.equal(true, '' + error);
-                    });
+                    var updateList = new UpdateManager(cleanFakeSketchManager, onErrorCallback);
 
                     var spy = sinon.spy(cleanFakeSketchManager, "createSketch");
                     var stub = sinon.stub(cleanFakeSketchManager, "getSketch");
@@ -408,10 +365,7 @@ require(['DefaultSketchCommands', 'UpdateManager', 'generated_proto/commands',
                     var clock = sinon.useFakeTimers();
 
                     this.sketchManager = new SketchSurfaceManager();
-                    var updateList = new UpdateManager(cleanFakeSketchManager, function (error) {
-                        console.log(error);
-                        expect(false).to.equal(true, '' + error);
-                    });
+                    var updateList = new UpdateManager(cleanFakeSketchManager, onErrorCallback);
 
                     var stub = sinon.stub(cleanFakeSketchManager, "getSketch");
 
@@ -450,54 +404,48 @@ require(['DefaultSketchCommands', 'UpdateManager', 'generated_proto/commands',
                     updateList.addUpdate(update);
                 });
             });
+
+            describe("CLEAR data tests (basically about resetting the sketch", function () {
+                beforeEach(function () {
+                    cleanFakeSketchManager = new SketchSurfaceManager();
+                });
+
+                it("tests that the list is empty, and the submission pointer and current pointer is changed.", function (done) {
+
+                    var updateList = new UpdateManager(cleanFakeSketchManager, RequireTest.createErrorCallback(expect, done));
+
+                    cleanFakeSketchManager.getCurrentSketch = function () {
+                        return cleanFakeSketch;
+                    };
+
+                    var saveObject = updateList.createMarker(true, Commands.Marker.MarkerType.SAVE, "Save the sketch!");
+                    var saveUpdate = CommandUtil.createUpdateFromCommands([saveObject]);
+                    updateList.addUpdate(saveUpdate);
+
+                    var markerObject = updateList.createMarker(true, Commands.Marker.MarkerType.SUBMISSION, "pounded you to submission");
+                    var update = CommandUtil.createUpdateFromCommands([markerObject]);
+                    updateList.addUpdate(update);
+
+                    var list = updateList.getUpdateList();
+                    ChaiProtobuf.updateEqual(expect, list[0], saveUpdate, "first object added was a SAVE object");
+                    ChaiProtobuf.updateEqual(expect, list[1], update, "second object added was a submission object");
+
+                    expect(updateList.isLastUpdateSubmission()).withMessage("afer marker is added the submission is the last update").to.be.true;
+                    expect(updateList.getCurrentPointer()).to.be.equal(2, "there are two items in the list and the pointer should be 2");
+
+                    updateList.clearUpdates(false);
+
+                    expect(updateList.isLastUpdateSubmission()).withMessage("afer Clear there should not be a last update submission").to.be.false;
+
+                    expect(updateList.getCurrentPointer()).to.equal(0, "afer SAVE the pointer should be 0");
+                    ChaiProtobuf.updateListEqual(expect, updateList, [], "afer SAVE there should be an empty list");
+                    done();
+                });
+            });
         });
 
         mocha.run();
         /*
-
-        QUnit.module("CLEAR data tests", {
-            sketch: {
-                resetSketch: function () {
-                }
-            },
-            sketchManager: new SketchSurfaceManager()
-        }); // basically a bunch of test about wether or not it is resetable.
-        QUnit.test("tests that the list is empty, and the submission pointer and current pointer is changed.", function (assert) {
-            var done = assert.async();
-
-            var updateList = new UpdateManager(this.sketchManager, function (error) {
-                assert.ok(false, error);
-                done();
-            });
-
-
-            var localSketch = this.sketch;
-            this.sketchManager.getCurrentSketch = function () {
-                return localSketch
-            };
-
-            var saveObject = updateList.createMarker(true, Commands.Marker.MarkerType.SAVE, "Save the sketch!");
-            var saveUpdate = CommandUtil.createUpdateFromCommands([saveObject]);
-            updateList.addUpdate(saveUpdate);
-
-            var markerObject = updateList.createMarker(true, Commands.Marker.MarkerType.SUBMISSION, "pounded you to submission");
-            var update = CommandUtil.createUpdateFromCommands([markerObject]);
-            updateList.addUpdate(update);
-
-            var list = updateList.getUpdateList();
-            assert.updateEqual(list[0], saveUpdate, "first object added was a SAVE object");
-            assert.updateEqual(list[1], update, "second object added was a submission object");
-
-            assert.equal(updateList.isLastUpdateSubmission(), true, "afer marker is added the submission is the last update");
-            assert.equal(updateList.getCurrentPointer(), 2, "there are two items in the list and the pointer should be 2");
-
-            updateList.clearUpdates(false);
-
-            assert.equal(updateList.isLastUpdateSubmission(), false, "afer Clear there should not be a last update submission");
-            assert.equal(updateList.getCurrentPointer(), 0, "afer SAVE the pointer should be 0");
-            assert.deepEqual(updateList.getUpdateList(), [], "afer SAVE there should be an empty list");
-            done();
-        });
 
         QUnit.module("undo and redo tests", {
             sketch: {

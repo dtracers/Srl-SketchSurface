@@ -21,4 +21,16 @@ define('RequireTest', ['chai', 'mocha', 'sinon', 'sinon-chai', 'chai-protobuf'],
             _.flag(this, 'message', msg);
         });
     });
+
+    return {
+        createErrorCallback: function (expect, done) {
+            return function (error) {
+                console.log(error);
+                expect(false).withMessage('' + error).to.be.true;
+                if (typeof done !== 'undefined') {
+                    done();
+                }
+            }
+        }
+    }
 });
