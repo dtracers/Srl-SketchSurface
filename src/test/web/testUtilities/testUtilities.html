@@ -1,0 +1,69 @@
+<head>
+    <!-- Caches the timing function so I can restore them at any time. -->
+    <script>
+        var setRealTimeout = (function (scope) {
+            var localMethod = scope.setTimeout;
+            return function (func, time) {
+                return localMethod(func, time);
+            };
+        })(this);
+
+        var clearRealTimeout = (function (scope) {
+            var localMethod = scope.clearTimeout;
+            return function (timeThing) {
+                return localMethod(timeThing);
+            };
+        })(this);
+
+        var setRealInterval = (function (scope) {
+            var localMethod = scope.setInterval;
+            return function (func, time) {
+                return localMethod(func, time);
+            };
+        })(this);
+
+        var clearRealInterval = (function (scope) {
+            var localMethod = scope.clearInterval;
+            return function (timeThing) {
+                return localMethod(timeThing);
+            };
+        })(this);
+        function restoreRealTime() {
+            setTimeout = setRealTimeout;
+            clearTimeout = clearRealTimeout;
+            setInterval = setRealInterval;
+            clearInterval = clearRealInterval;
+        }
+    </script>
+
+    <link rel="stylesheet" href="/bower_components/qunit/qunit/qunit.css">
+    <link rel="stylesheet" href="/bower_components/mocha/mocha.css">
+    <script src="/bower_components/jquery/dist/jquery.js"></script>
+    <script src="/bower_components/qunit/qunit/qunit.js"></script>
+    <script src="/bower_components/mocha/mocha.js"></script>
+    <script src="/bower_components/chai/chai.js"></script>
+    <!-- http://sinonjs.org/qunit/ -->
+    <script src="/bower_components/sinon/index.js"></script>
+    <!-- mocking framework -->
+    <script src="sinon-qunit-1.0.0.js"></script>
+    <!-- qunit mocking framework -->
+
+    <script src="/bower_components/qunit-once/qunit-once.js"></script>
+    <!-- qunit once nice and helpful for making a teardownOnce and setupOnce method -->
+
+    <!-- simulates an event on an element. -->
+    <script src="eventSimulator.js"></script>
+
+    <script src="databaseHelper.js"></script>
+
+    <!-- helpers for comparisons -->
+    <script src="ExceptionTester.js"></script>
+
+    <!-- qunit extensions -->
+    <script src="qunit-protobuf.js"></script>
+    <script>
+        QUnit.config.testTimeout = 5000;
+    </script>
+    <script>mocha.setup('bdd');</script>
+    <script>mocha.checkLeaks();</script>
+</head>
