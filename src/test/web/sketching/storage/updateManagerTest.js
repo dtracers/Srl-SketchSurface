@@ -332,7 +332,7 @@ require(['DefaultSketchCommands', 'UpdateManager', 'generated_proto/commands',
                     cleanFakeSketchManager = new SketchSurfaceManager();
                     var clock = sinon.useFakeTimers();
 
-                    this.sketchManager = new SketchSurfaceManager();
+                    cleanFakeSketchManager = new SketchSurfaceManager();
                     var updateList = new UpdateManager(cleanFakeSketchManager, onErrorCallback);
 
                     var spy = sinon.spy(cleanFakeSketchManager, "createSketch");
@@ -365,7 +365,7 @@ require(['DefaultSketchCommands', 'UpdateManager', 'generated_proto/commands',
                     cleanFakeSketchManager = new SketchSurfaceManager();
                     var clock = sinon.useFakeTimers();
 
-                    this.sketchManager = new SketchSurfaceManager();
+                    cleanFakeSketchManager = new SketchSurfaceManager();
                     var updateList = new UpdateManager(cleanFakeSketchManager, onErrorCallback);
 
                     var stub = sinon.stub(cleanFakeSketchManager, "getSketch");
@@ -523,321 +523,302 @@ require(['DefaultSketchCommands', 'UpdateManager', 'generated_proto/commands',
                     expect(stub).withMessage("Undo method for the assign should be called once").to.be.calledOnce;
                     done();
                 });
+
+                it("double undo throws error", function (done) {
+                    expect(1);
+
+                    var updateList = new UpdateManager(cleanFakeSketchManager, function (error) {
+                        console.log(error);
+                        expect(error).to.be.an.instanceof(UpdateManagerModule.UndoRedoException);
+                        done();
+                    });
+
+                    Commands.SrlCommand.addRedoMethod(Commands.CommandType.ASSIGN_ATTRIBUTE, function () {
+                    });
+                    Commands.SrlCommand.addUndoMethod(Commands.CommandType.ASSIGN_ATTRIBUTE, function () {
+                    });
+                    var assignAt = CommandUtil.createBaseCommand(Commands.CommandType.ASSIGN_ATTRIBUTE, true);
+                    var assignUpdate = CommandUtil.createUpdateFromCommands([assignAt]);
+                    updateList.addUpdate(assignUpdate);
+
+                    var markerObject = CommandUtil.createBaseCommand(Commands.CommandType.UNDO, false);
+                    var update = CommandUtil.createUpdateFromCommands([markerObject]);
+                    updateList.addUpdate(update);
+
+                    var undoMarkerObject = CommandUtil.createBaseCommand(Commands.CommandType.UNDO, false);
+                    var undoUpdate = CommandUtil.createUpdateFromCommands([undoMarkerObject]);
+                    updateList.addUpdate(undoUpdate);
+                    // no done here is called when checking the error.
+                });
+
+                it("a single undo then redo", function (done) {
+                    var updateList = new UpdateManager(cleanFakeSketchManager, RequireTest.createErrorCallback(expect, done));
+
+                    var undoStub = sinon.stub();
+                    undoStub.returns(false); // we are not drawing.
+
+                    var redoStub = sinon.stub();
+                    redoStub.returns(false); // we are not drawing.
+                    Commands.SrlCommand.addRedoMethod(Commands.CommandType.ASSIGN_ATTRIBUTE, redoStub);
+                    Commands.SrlCommand.addUndoMethod(Commands.CommandType.ASSIGN_ATTRIBUTE, undoStub);
+                    var assignAt = CommandUtil.createBaseCommand(Commands.CommandType.ASSIGN_ATTRIBUTE, true);
+                    var assignUpdate = CommandUtil.createUpdateFromCommands([assignAt]);
+                    updateList.addUpdate(assignUpdate);
+
+                    expect(updateList.getCurrentPointer()).withMessage("a single item means pointer is at 1").to.equal(1);
+                    expect(redoStub).withMessage("Redo should be called once").to.be.calledOnce;
+
+                    var undoMarkerObject = CommandUtil.createBaseCommand(Commands.CommandType.UNDO, false);
+                    var undoUpdate = CommandUtil.createUpdateFromCommands([undoMarkerObject]);
+                    updateList.addUpdate(undoUpdate);
+
+                    expect(updateList.getCurrentPointer()).withMessage("after undoing once the pointer should be at zero").to.equal(0);
+                    expect(undoStub).withMessage("Undo method for the assign should be called once").to.be.calledOnce;
+
+                    var undoMarkerObject = CommandUtil.createBaseCommand(Commands.CommandType.REDO, false);
+                    var undoUpdate = CommandUtil.createUpdateFromCommands([undoMarkerObject]);
+                    updateList.addUpdate(undoUpdate);
+
+                    expect(updateList.getCurrentPointer()).withMessage("after redoing the list should be back at 1").to.equal(1);
+                    expect(redoStub).withMessage("redo method for the assign should be called a second time").to.be.calledTwice;
+                    done();
+                });
+
+                it("a single undo then redo using udoAction and redoAction methods", function (done) {
+                    var updateList = new UpdateManager(undefined, RequireTest.createErrorCallback(expect, done));
+
+                    var undoStub = sinon.stub();
+                    undoStub.returns(false); // we are not drawing.
+
+                    var redoStub = sinon.stub();
+                    redoStub.returns(false); // we are not drawing.
+                    Commands.SrlCommand.addRedoMethod(Commands.CommandType.ASSIGN_ATTRIBUTE, redoStub);
+                    Commands.SrlCommand.addUndoMethod(Commands.CommandType.ASSIGN_ATTRIBUTE, undoStub);
+                    var assignAt = CommandUtil.createBaseCommand(Commands.CommandType.ASSIGN_ATTRIBUTE, true);
+                    var assignUpdate = CommandUtil.createUpdateFromCommands([assignAt]);
+                    updateList.addUpdate(assignUpdate);
+
+                    expect(updateList.getCurrentPointer()).to.be.equal(1, "a single item means pointer is at 1");
+                    expect(redoStub).withMessage("Redo should be called once").to.be.calledOnce;
+
+                    updateList.undoAction(false);
+
+                    expect(updateList.getCurrentPointer()).to.be.equal(0, "after undoing once the pointer should be at zero");
+                    expect(undoStub).withMessage("Undo method for the assign should be called once").to.be.calledOnce;
+
+                    updateList.redoAction(false);
+
+                    expect(updateList.getCurrentPointer()).to.be.equal(1, "after undoing once the pointer should be at zero");
+                    expect(redoStub).withMessage( "redo method for the assign should be called a second time").to.be.calledTwic;
+
+                    done();
+                });
+
+                it("a undo/redo causing a split", function (done) {
+                    var updateList = new UpdateManager(undefined, RequireTest.createErrorCallback(expect, done));
+
+                    var undoStub = sinon.stub();
+                    undoStub.returns(false); // we are not drawing.
+
+                    var redoStub = sinon.stub();
+                    redoStub.returns(false); // we are not drawing.
+                    Commands.SrlCommand.addRedoMethod(Commands.CommandType.ASSIGN_ATTRIBUTE, redoStub);
+                    Commands.SrlCommand.addUndoMethod(Commands.CommandType.ASSIGN_ATTRIBUTE, undoStub);
+                    var assignAt = CommandUtil.createBaseCommand(Commands.CommandType.ASSIGN_ATTRIBUTE, true);
+                    var assignUpdate = CommandUtil.createUpdateFromCommands([assignAt]);
+                    updateList.addUpdate(assignUpdate);
+
+                    updateList.undoAction(false);
+
+                    updateList.redoAction(false);
+
+                    var assignAt = CommandUtil.createBaseCommand(Commands.CommandType.ASSIGN_ATTRIBUTE, true);
+                    var assignUpdate = CommandUtil.createUpdateFromCommands([assignAt]);
+                    updateList.addUpdate(assignUpdate);
+
+                    Commands.SrlCommand.removeRedoMethod(Commands.CommandType.ASSIGN_ATTRIBUTE);
+                    Commands.SrlCommand.removeUndoMethod(Commands.CommandType.ASSIGN_ATTRIBUTE);
+
+                    var updateList = updateList.getUpdateList();
+                    expect(6).withMessage("list shoudl be correct number of elements").to.be.equal(updateList.length);
+                    expect(updateList[0].commands[0].commandType).withMessage("command type should represent split")
+                        .to.be.equal(Commands.CommandType.ASSIGN_ATTRIBUTE);
+                    expect(updateList[1].commands[0].commandType).withMessage("command type should represent split")
+                        .to.be.equal(Commands.CommandType.MARKER);
+                    expect(updateList[2].commands[0].commandType).withMessage("command type should represent split")
+                        .to.be.equal(Commands.CommandType.UNDO);
+                    expect(updateList[3].commands[0].commandType).withMessage("command type should represent split")
+                        .to.be.equal(Commands.CommandType.REDO);
+                    expect(updateList[4].commands[0].commandType).withMessage("command type should represent split")
+                        .to.be.equal(Commands.CommandType.MARKER);
+                    expect(updateList[5].commands[0].commandType).withMessage("command type should represent split")
+                        .to.be.equal(Commands.CommandType.ASSIGN_ATTRIBUTE);
+                    done();
+                });
+
+                it("adding a Create sketch command then calling undo on it", function () {
+                    var clock = sinon.useFakeTimers();
+
+                    var updateList = new UpdateManager(cleanFakeSketchManager, onErrorCallback);
+
+                    var spy = sinon.spy(cleanFakeSketchManager, "createSketch");
+                    var stub1 = sinon.stub(cleanFakeSketchManager, "getSketch");
+                    var stub2 = sinon.stub(cleanFakeSketchManager, "deleteSketch");
+                    var stub3 = sinon.stub(cleanFakeSketchManager, "getCurrentSketch");
+
+                    var secondSketch = {};
+
+                    stub1.returns(secondSketch);
+                    stub3.returns(secondSketch);
+
+                    var command = CommandUtil.createBaseCommand(Commands.CommandType.CREATE_SKETCH, false);
+                    var sketchData = new Commands.ActionCreateSketch();
+                    var idChain = new ProtoSketchUtil.IdChain();
+                    var id1 = ClassUtils.generateUuid();
+                    idChain.idChain = [id1];
+                    sketchData.sketchId = idChain;
+                    command.setCommandData(sketchData.toArrayBuffer());
+                    var update = CommandUtil.createUpdateFromCommands([command]);
+                    updateList.addUpdate(update);
+
+                    var command = CommandUtil.createBaseCommand(Commands.CommandType.CREATE_SKETCH, false);
+                    var sketchData = new Commands.ActionCreateSketch();
+                    var idChain = new ProtoSketchUtil.IdChain();
+                    var id = ClassUtils.generateUuid();
+                    idChain.idChain = [id];
+                    sketchData.sketchId = idChain;
+                    command.setCommandData(sketchData.toArrayBuffer());
+                    var update = CommandUtil.createUpdateFromCommands([command]);
+                    updateList.addUpdate(update);
+
+                    clock.tick(10);
+
+                    expect(spy).to.be.calledWith(id);
+                    expect(spy).to.be.calledTwice;
+                    expect(stub1).to.be.calledWith(id);
+                    expect(stub1).to.be.calledTwice;
+
+                    updateList.undoAction(true);
+                    clock.tick(10);
+
+                    expect(stub1).withMessage("get sketch should be called 3 times").to.be.calledWith(id1);
+                    expect(stub1).to.be.calledThrice;
+                    expect(stub2).withMessage("delete should only happen once").to.be.calledWith(id);
+                    expect(stub2).to.be.calledOnce;
+                });
+
+                it("undoing first create sketch throws an exception", function () {
+                    var clock = sinon.useFakeTimers();
+
+                    var updateList = new UpdateManager(cleanFakeSketchManager, function (error) {
+                        expect(error).to.be.instanceof(UpdateManagerModule.UpdateException);
+                    });
+
+                    var spy = sinon.spy(cleanFakeSketchManager, "createSketch");
+                    var stub1 = sinon.stub(cleanFakeSketchManager, "getSketch");
+                    var stub2 = sinon.stub(cleanFakeSketchManager, "deleteSketch");
+
+                    var secondSketch = {};
+
+                    stub1.returns(secondSketch);
+
+                    var command = CommandUtil.createBaseCommand(Commands.CommandType.CREATE_SKETCH, false);
+                    var sketchData = new Commands.ActionCreateSketch();
+                    var idChain = new ProtoSketchUtil.IdChain();
+                    var id = ClassUtils.generateUuid();
+                    idChain.idChain = [id];
+                    sketchData.sketchId = idChain;
+                    command.setCommandData(sketchData.toArrayBuffer());
+                    var update = CommandUtil.createUpdateFromCommands([command]);
+                    updateList.addUpdate(update);
+
+                    clock.tick(10);
+
+                    updateList.undoAction(true);
+                    clock.tick(10);
+                });
+
+                it("adding a swtich sketch and then undoing that creation", function () {
+                    var clock = sinon.useFakeTimers();
+
+                    var updateList = new UpdateManager(cleanFakeSketchManager, onErrorCallback);
+
+                    var stub = sinon.stub(cleanFakeSketchManager, "getSketch");
+                    var stub2 = sinon.stub(cleanFakeSketchManager, "getCurrentSketch");
+
+                    var secondSketch = {};
+
+                    stub.returns(secondSketch);
+                    stub2.returns(secondSketch);
+
+                    // assuming this works!
+                    var command = CommandUtil.createBaseCommand(Commands.CommandType.CREATE_SKETCH, false);
+                    var sketchData = new Commands.ActionCreateSketch();
+                    var idChain = new ProtoSketchUtil.IdChain();
+                    var id = ClassUtils.generateUuid();
+                    idChain.idChain = [id];
+                    sketchData.sketchId = idChain;
+                    command.setCommandData(sketchData.toArrayBuffer());
+                    var update = CommandUtil.createUpdateFromCommands([command]);
+                    updateList.addUpdate(update);
+
+                    clock.tick(10);
+
+                    // TEST CODE HERE
+                    var command = CommandUtil.createBaseCommand(Commands.CommandType.SWITCH_SKETCH, false);
+                    var idChain = new ProtoSketchUtil.IdChain();
+                    var id2 = ClassUtils.generateUuid();
+                    idChain.idChain = [id2];
+                    command.setCommandData(idChain.toArrayBuffer());
+                    var update = CommandUtil.createUpdateFromCommands([command]);
+                    updateList.addUpdate(update);
+
+                    clock.tick(10);
+
+                    // first call is from create sketch
+                    expect(stub).withMessage( "get sketch should be called with: " + id2).to.be.calledWith(id2);
+                    expect(stub).withMessage("get sketch should be called twice, once for create another for switch").to.be.calledTwice;
+
+                    updateList.undoAction(false);
+                    clock.tick(10);
+
+                    expect(stub).withMessage("get sketch should also be called with: " + id).to.be.calledWith(id);
+                    expect(stub).withMessage( "get sketch should be called a third time after undoing").to.be.calledThrice;
+                });
+
+                it("undo switch sketch throws exception no previous sketch exist", function () {
+                    var clock = sinon.useFakeTimers();
+
+                    var updateList = new UpdateManager(cleanFakeSketchManager, function (error) {
+                        expect(error).to.be.instanceof(UpdateManagerModule.UpdateException);
+                    });
+
+                    var stub = sinon.stub(cleanFakeSketchManager, "getSketch");
+
+                    var secondSketch = {};
+
+                    stub.returns(secondSketch);
+
+                    var command = CommandUtil.createBaseCommand(Commands.CommandType.SWITCH_SKETCH, false);
+                    var idChain = new ProtoSketchUtil.IdChain();
+                    var id = ClassUtils.generateUuid();
+                    idChain.idChain = [id];
+                    command.setCommandData(idChain.toArrayBuffer());
+                    var update = CommandUtil.createUpdateFromCommands([command]);
+                    updateList.addUpdate(update);
+
+                    clock.tick(10);
+
+                    updateList.undoAction(false);
+                    clock.tick(10);
+                });
             });
         });
 
         mocha.run();
         /*
 
-        it("double undo throws error", function (assert) {
 
-            expect(1);
-
-            var updateList = new UpdateManager(this.sketchManager, function (error) {
-                assert.ok(error instanceof UndoRedoException, error);
-                done();
-            });
-
-            Commands.SrlCommand.addRedoMethod(Commands.CommandType.ASSIGN_ATTRIBUTE, function () {
-            });
-            Commands.SrlCommand.addUndoMethod(Commands.CommandType.ASSIGN_ATTRIBUTE, function () {
-            });
-            var assignAt = CommandUtil.createBaseCommand(Commands.CommandType.ASSIGN_ATTRIBUTE, true);
-            var assignUpdate = CommandUtil.createUpdateFromCommands([assignAt]);
-            updateList.addUpdate(assignUpdate);
-
-            var markerObject = CommandUtil.createBaseCommand(Commands.CommandType.UNDO, false);
-            var update = CommandUtil.createUpdateFromCommands([markerObject]);
-            updateList.addUpdate(update);
-
-            var undoMarkerObject = CommandUtil.createBaseCommand(Commands.CommandType.UNDO, false);
-            var undoUpdate = CommandUtil.createUpdateFromCommands([undoMarkerObject]);
-            updateList.addUpdate(undoUpdate);
-
-            Commands.SrlCommand.removeRedoMethod(Commands.CommandType.ASSIGN_ATTRIBUTE);
-            Commands.SrlCommand.removeUndoMethod(Commands.CommandType.ASSIGN_ATTRIBUTE);
-        });
-
-        it("a single undo then redo", function (assert) {
-
-
-            var updateList = new UpdateManager(this.sketchManager, function (error) {
-                assert.ok(false, error);
-                done();
-            });
-
-            var undoStub = sinon.stub();
-            undoStub.returns(false); // we are not drawing.
-
-            var redoStub = sinon.stub();
-            redoStub.returns(false); // we are not drawing.
-            Commands.SrlCommand.addRedoMethod(Commands.CommandType.ASSIGN_ATTRIBUTE, redoStub);
-            Commands.SrlCommand.addUndoMethod(Commands.CommandType.ASSIGN_ATTRIBUTE, undoStub);
-            var assignAt = CommandUtil.createBaseCommand(Commands.CommandType.ASSIGN_ATTRIBUTE, true);
-            var assignUpdate = CommandUtil.createUpdateFromCommands([assignAt]);
-            updateList.addUpdate(assignUpdate);
-
-            assert.equal(updateList.getCurrentPointer(), 1, "a single item means pointer is at 1");
-            assert.ok(redoStub.calledOnce, "Redo should be called once");
-
-            var undoMarkerObject = CommandUtil.createBaseCommand(Commands.CommandType.UNDO, false);
-            var undoUpdate = CommandUtil.createUpdateFromCommands([undoMarkerObject]);
-            updateList.addUpdate(undoUpdate);
-
-            assert.equal(updateList.getCurrentPointer(), 0, "after undoing once the pointer should be at zero");
-            assert.ok(undoStub.calledOnce, "Undo method for the assign should be called once");
-
-            var undoMarkerObject = CommandUtil.createBaseCommand(Commands.CommandType.REDO, false);
-            var undoUpdate = CommandUtil.createUpdateFromCommands([undoMarkerObject]);
-            updateList.addUpdate(undoUpdate);
-
-            assert.equal(updateList.getCurrentPointer(), 1, "after undoing once the pointer should be at zero");
-            assert.ok(redoStub.calledTwice, "redo method for the assign should be called a second time");
-
-            Commands.SrlCommand.removeRedoMethod(Commands.CommandType.ASSIGN_ATTRIBUTE);
-            Commands.SrlCommand.removeUndoMethod(Commands.CommandType.ASSIGN_ATTRIBUTE);
-            done();
-        });
-
-        it("a single undo then redo using udoAction and redoAction methods", function (assert) {
-
-
-            var updateList = new UpdateManager(undefined, function (error) {
-                assert.ok(false, error);
-                done();
-            });
-
-            var undoStub = sinon.stub();
-            undoStub.returns(false); // we are not drawing.
-
-            var redoStub = sinon.stub();
-            redoStub.returns(false); // we are not drawing.
-            Commands.SrlCommand.addRedoMethod(Commands.CommandType.ASSIGN_ATTRIBUTE, redoStub);
-            Commands.SrlCommand.addUndoMethod(Commands.CommandType.ASSIGN_ATTRIBUTE, undoStub);
-            var assignAt = CommandUtil.createBaseCommand(Commands.CommandType.ASSIGN_ATTRIBUTE, true);
-            var assignUpdate = CommandUtil.createUpdateFromCommands([assignAt]);
-            updateList.addUpdate(assignUpdate);
-
-            assert.equal(updateList.getCurrentPointer(), 1, "a single item means pointer is at 1");
-            assert.ok(redoStub.calledOnce, "Redo should be called once");
-
-            updateList.undoAction(false);
-
-            assert.equal(updateList.getCurrentPointer(), 0, "after undoing once the pointer should be at zero");
-            assert.ok(undoStub.calledOnce, "Undo method for the assign should be called once");
-
-            updateList.redoAction(false);
-
-            assert.equal(updateList.getCurrentPointer(), 1, "after undoing once the pointer should be at zero");
-            assert.ok(redoStub.calledTwice, "redo method for the assign should be called a second time");
-
-            Commands.SrlCommand.removeRedoMethod(Commands.CommandType.ASSIGN_ATTRIBUTE);
-            Commands.SrlCommand.removeUndoMethod(Commands.CommandType.ASSIGN_ATTRIBUTE);
-            done();
-        });
-
-        it("a undo/redo causing a split", function (assert) {
-
-
-            var updateList = new UpdateManager(undefined, function (error) {
-                assert.ok(false, error);
-                done();
-            });
-
-            var undoStub = sinon.stub();
-            undoStub.returns(false); // we are not drawing.
-
-            var redoStub = sinon.stub();
-            redoStub.returns(false); // we are not drawing.
-            Commands.SrlCommand.addRedoMethod(Commands.CommandType.ASSIGN_ATTRIBUTE, redoStub);
-            Commands.SrlCommand.addUndoMethod(Commands.CommandType.ASSIGN_ATTRIBUTE, undoStub);
-            var assignAt = CommandUtil.createBaseCommand(Commands.CommandType.ASSIGN_ATTRIBUTE, true);
-            var assignUpdate = CommandUtil.createUpdateFromCommands([assignAt]);
-            updateList.addUpdate(assignUpdate);
-
-            updateList.undoAction(false);
-
-            updateList.redoAction(false);
-
-            var assignAt = CommandUtil.createBaseCommand(Commands.CommandType.ASSIGN_ATTRIBUTE, true);
-            var assignUpdate = CommandUtil.createUpdateFromCommands([assignAt]);
-            updateList.addUpdate(assignUpdate);
-
-            Commands.SrlCommand.removeRedoMethod(Commands.CommandType.ASSIGN_ATTRIBUTE);
-            Commands.SrlCommand.removeUndoMethod(Commands.CommandType.ASSIGN_ATTRIBUTE);
-
-            var updateList = updateList.getUpdateList();
-            console.log(updateList);
-            assert.equal(6, updateList.length);
-            assert.equal(updateList[0].commands[0].commandType, Commands.CommandType.ASSIGN_ATTRIBUTE);
-            assert.equal(updateList[1].commands[0].commandType, Commands.CommandType.MARKER);
-            assert.equal(updateList[2].commands[0].commandType, Commands.CommandType.UNDO);
-            assert.equal(updateList[3].commands[0].commandType, Commands.CommandType.REDO);
-            assert.equal(updateList[4].commands[0].commandType, Commands.CommandType.MARKER);
-            assert.equal(updateList[5].commands[0].commandType, Commands.CommandType.ASSIGN_ATTRIBUTE);
-            done();
-        });
-
-        it("adding a Create sketch command then calling undo on it", function (assert) {
-
-            var clock = sinon.useFakeTimers();
-
-            var updateList = new UpdateManager(this.sketchManager, function (error) {
-                assert.ok(false, error);
-            });
-
-            var spy = sinon.spy(this.sketchManager, "createSketch");
-            var stub1 = sinon.stub(this.sketchManager, "getSketch");
-            var stub2 = sinon.stub(this.sketchManager, "deleteSketch");
-            var stub3 = sinon.stub(this.sketchManager, "getCurrentSketch");
-
-            var secondSketch = {};
-
-            stub1.returns(secondSketch);
-            stub3.returns(secondSketch);
-
-            var command = CommandUtil.createBaseCommand(Commands.CommandType.CREATE_SKETCH, false);
-            var sketchData = new Commands.ActionCreateSketch();
-            var idChain = new ProtoSketchUtil.IdChain();
-            var id1 = ClassUtils.generateUuid();
-            idChain.idChain = [id1];
-            sketchData.sketchId = idChain;
-            command.setCommandData(sketchData.toArrayBuffer());
-            var update = CommandUtil.createUpdateFromCommands([command]);
-            updateList.addUpdate(update);
-
-            var command = CommandUtil.createBaseCommand(Commands.CommandType.CREATE_SKETCH, false);
-            var sketchData = new Commands.ActionCreateSketch();
-            var idChain = new ProtoSketchUtil.IdChain();
-            var id = ClassUtils.generateUuid();
-            idChain.idChain = [id];
-            sketchData.sketchId = idChain;
-            command.setCommandData(sketchData.toArrayBuffer());
-            var update = CommandUtil.createUpdateFromCommands([command]);
-            updateList.addUpdate(update);
-
-            clock.tick(10);
-
-            assert.ok(spy.calledWith(id) && spy.calledTwice);
-            assert.ok(stub1.calledWith(id) && stub1.calledTwice);
-
-            updateList.undoAction(true);
-            clock.tick(10);
-
-            assert.ok(stub1.calledWith(id1) && stub1.calledThrice, "get sketch should be called 3 times");
-            assert.ok(stub2.calledWith(id) && stub2.calledOnce, "delete should only happen once");
-        });
-
-        it("undoing first create sketch throws an exception", function (assert) {
-
-            var clock = sinon.useFakeTimers();
-
-            var updateList = new UpdateManager(this.sketchManager, function (error) {
-                assert.ok(error instanceof UpdateException, "Successfully threw: " + error);
-            });
-
-            var spy = sinon.spy(this.sketchManager, "createSketch");
-            var stub1 = sinon.stub(this.sketchManager, "getSketch");
-            var stub2 = sinon.stub(this.sketchManager, "deleteSketch");
-
-            var secondSketch = {};
-
-            stub1.returns(secondSketch);
-
-            var command = CommandUtil.createBaseCommand(Commands.CommandType.CREATE_SKETCH, false);
-            var sketchData = new Commands.ActionCreateSketch();
-            var idChain = new ProtoSketchUtil.IdChain();
-            var id = ClassUtils.generateUuid();
-            idChain.idChain = [id];
-            sketchData.sketchId = idChain;
-            command.setCommandData(sketchData.toArrayBuffer());
-            var update = CommandUtil.createUpdateFromCommands([command]);
-            updateList.addUpdate(update);
-
-            clock.tick(10);
-
-            updateList.undoAction(true);
-            clock.tick(10);
-        });
-
-        it("adding a swtich sketch and then undoing that creation", function (assert) {
-
-            var clock = sinon.useFakeTimers();
-
-            var updateList = new UpdateManager(this.sketchManager, function (error) {
-                assert.ok(false, error);
-            }, this.sketchManager);
-
-            var stub = sinon.stub(this.sketchManager, "getSketch");
-            var stub2 = sinon.stub(this.sketchManager, "getCurrentSketch");
-
-            var secondSketch = {};
-
-            stub.returns(secondSketch);
-            stub2.returns(secondSketch);
-
-            // assuming this works!
-            var command = CommandUtil.createBaseCommand(Commands.CommandType.CREATE_SKETCH, false);
-            var sketchData = new Commands.ActionCreateSketch();
-            var idChain = new ProtoSketchUtil.IdChain();
-            var id = ClassUtils.generateUuid();
-            idChain.idChain = [id];
-            sketchData.sketchId = idChain;
-            command.setCommandData(sketchData.toArrayBuffer());
-            var update = CommandUtil.createUpdateFromCommands([command]);
-            updateList.addUpdate(update);
-
-            clock.tick(10);
-
-            // TEST CODE HERE
-            var command = CommandUtil.createBaseCommand(Commands.CommandType.SWITCH_SKETCH, false);
-            var idChain = new ProtoSketchUtil.IdChain();
-            var id2 = ClassUtils.generateUuid();
-            idChain.idChain = [id2];
-            command.setCommandData(idChain.toArrayBuffer());
-            var update = CommandUtil.createUpdateFromCommands([command]);
-            updateList.addUpdate(update);
-
-            clock.tick(10);
-
-            // first call is from create sketch
-            assert.ok(stub.calledWith(id2), "get sketch should be called with: " + id2);
-            assert.ok(stub.calledTwice, "get sketch should be called twice, once for create another for switch");
-
-            updateList.undoAction(false);
-            clock.tick(10);
-
-            assert.ok(stub.calledWith(id), "get sketch should also be called with: " + id);
-            assert.ok(stub.calledThrice, "get sketch should be called a third time after undoing");
-        });
-
-        it("undo switch sketch throws exception no previous sketch exist", function (assert) {
-
-            var clock = sinon.useFakeTimers();
-
-            var updateList = new UpdateManager(this.sketchManager, function (error) {
-                assert.ok(error instanceof UpdateException, "Successfully threw: " + error);
-            });
-
-            var stub = sinon.stub(this.sketchManager, "getSketch");
-
-            var secondSketch = {};
-
-            stub.returns(secondSketch);
-
-            var command = CommandUtil.createBaseCommand(Commands.CommandType.SWITCH_SKETCH, false);
-            var idChain = new ProtoSketchUtil.IdChain();
-            var id = ClassUtils.generateUuid();
-            idChain.idChain = [id];
-            command.setCommandData(idChain.toArrayBuffer());
-            var update = CommandUtil.createUpdateFromCommands([command]);
-            updateList.addUpdate(update);
-
-            clock.tick(10);
-
-            updateList.undoAction(false);
-            clock.tick(10);
-        });
 
         QUnit.module("SPLIT tests", {
             sketch: {
@@ -846,13 +827,10 @@ require(['DefaultSketchCommands', 'UpdateManager', 'generated_proto/commands',
             },
             sketchManager: new SketchSurfaceManager()
         });
-        it("a single split", function (assert) {
+        it("a single split", function (done) {
 
 
-            var updateList = new UpdateManager(this.sketch, function (error) {
-                assert.ok(false, error);
-                done();
-            });
+            var updateList = new UpdateManager(this.sketch, RequireTest.createErrorCallback(expect, done));
 
             var startSplitObject = updateList.createMarker(true, Commands.Marker.MarkerType.SPLIT, "1");
             var startSplitUpdate = CommandUtil.createUpdateFromCommands([startSplitObject]);
@@ -887,13 +865,10 @@ require(['DefaultSketchCommands', 'UpdateManager', 'generated_proto/commands',
             },
         });
 
-        it("a single split then an undo then a redo", function (assert) {
+        it("a single split then an undo then a redo", function (done) {
 
 
-            var updateList = new UpdateManager(this.sketchManager, function (error) {
-                assert.ok(false, error);
-                done();
-            });
+            var updateList = new UpdateManager(cleanFakeSketchManager, RequireTest.createErrorCallback(expect, done));
 
             var startSplitObject = updateList.createMarker(true, Commands.Marker.MarkerType.SPLIT, "1");
             var startSplitUpdate = CommandUtil.createUpdateFromCommands([startSplitObject]);
@@ -950,16 +925,14 @@ require(['DefaultSketchCommands', 'UpdateManager', 'generated_proto/commands',
             },
         });
 
-        it("plugin gets correct data for simple update", function (assert) {
+        it("plugin gets correct data for simple update", function (done) {
             expect(5);
             var clock = sinon.useFakeTimers();
             var stub = sinon.stub();
             stub.returns(false); // we are not drawing.
 
             Commands.SrlCommand.addRedoMethod(Commands.CommandType.ASSIGN_ATTRIBUTE, stub);
-            var updateList = new UpdateManager(undefined, function (error) {
-                assert.ok(false, error);
-            });
+            var updateList = new UpdateManager(undefined, onErrorCallback);
 
             var markerObject = CommandUtil.createBaseCommand(Commands.CommandType.ASSIGN_ATTRIBUTE, true);
             var update = CommandUtil.createUpdateFromCommands([markerObject]);

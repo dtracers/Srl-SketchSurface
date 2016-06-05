@@ -353,13 +353,13 @@ function(DefaultCommands, ProtoCommands, ProtoSketchUtil, ClassUtils, ProtoUtil,
                     // [unreachable update]
                     var startingMarker = localScope.createMarker(false, Commands.Marker.MarkerType.SPLIT, '' +
                         splitDifference);
-                    updateList.splice(currentUpdateIndex, 0, ProtoUtil.createUpdateFromCommands([startingMarker]));
+                    updateList.splice(currentUpdateIndex, 0, CommandUtil.createUpdateFromCommands([startingMarker]));
 
                     // Creates and inserts the second marker [unreachable update
                     // (probably undo or redo)] -> [marker] -> [index out of range]
                     var endingMarker = localScope.createMarker(false, Commands.Marker.MarkerType.SPLIT, '' +
                         (0 - splitDifference));
-                    updateList.push(ProtoUtil.createUpdateFromCommands([endingMarker]));
+                    updateList.push(CommandUtil.createUpdateFromCommands([endingMarker]));
 
                     // Reset the information
                     inRedoUndoMode = false;
@@ -682,8 +682,8 @@ function(DefaultCommands, ProtoCommands, ProtoSketchUtil, ClassUtils, ProtoUtil,
          * @param {Boolean} userCreated - True if the userCreated the command false otherwise.
          */
         this.redoAction = function (userCreated) {
-            var redoCommand = ProtoUtil.createBaseCommand(Commands.CommandType.REDO, userCreated);
-            var update = ProtoUtil.createUpdateFromCommands([redoCommand]);
+            var redoCommand = CommandUtil.createBaseCommand(Commands.CommandType.REDO, userCreated);
+            var update = CommandUtil.createUpdateFromCommands([redoCommand]);
             this.addUpdate(update, false);
         };
 
@@ -693,8 +693,8 @@ function(DefaultCommands, ProtoCommands, ProtoSketchUtil, ClassUtils, ProtoUtil,
          * @param {Boolean} userCreated - True if the userCreated the command false otherwise.
          */
         this.undoAction = function (userCreated) {
-            var undoCommand = ProtoUtil.createBaseCommand(Commands.CommandType.UNDO, userCreated);
-            var update = ProtoUtil.createUpdateFromCommands([undoCommand]);
+            var undoCommand = CommandUtil.createBaseCommand(Commands.CommandType.UNDO, userCreated);
+            var update = CommandUtil.createUpdateFromCommands([undoCommand]);
             var tempIndex = currentUpdateIndex;
             this.addUpdate(update, false);
         };
