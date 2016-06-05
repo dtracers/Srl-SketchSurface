@@ -1,6 +1,7 @@
 try {
     require('node-define');
     require('node-amd-require');
+    require('requirejs');
 } catch(exception) {
     console.log(exception);
 }
@@ -227,10 +228,10 @@ require(['DefaultSketchCommands', 'UpdateManager', 'generated_proto/commands',
                 });
             });
             describe("submission tests", function () {
-
                 afterEach(function () {
                     try {
                         Commands.SrlCommand.removeRedoMethod(Commands.CommandType.ASSIGN_ATTRIBUTE);
+                        Commands.SrlCommand.removeUndoMethod(Commands.CommandType.ASSIGN_ATTRIBUTE);
                     } catch(ignoredException) {
 
                     }
@@ -442,106 +443,94 @@ require(['DefaultSketchCommands', 'UpdateManager', 'generated_proto/commands',
                     done();
                 });
             });
+            describe("undo and redo tests", function () {
+                beforeEach(function () {
+                    cleanFakeSketchManager = new SketchSurfaceManager();
+                });
+
+                afterEach(function () {
+                    try {
+                        Commands.SrlCommand.removeRedoMethod(Commands.CommandType.ASSIGN_ATTRIBUTE);
+                        Commands.SrlCommand.removeUndoMethod(Commands.CommandType.ASSIGN_ATTRIBUTE);
+                    } catch(ignoredException) {
+
+                    }
+                });
+
+                it("trying to redo when you can't redo throws an error", function (done) {
+
+                    var updateList = new UpdateManager(undefined, function (error) {
+                        expect(error).to.be.an.instanceof(UpdateManagerModule.UndoRedoException);
+                        done();
+                    });
+
+                    var markerObject = CommandUtil.createBaseCommand(Commands.CommandType.REDO, false);
+                    var update = CommandUtil.createUpdateFromCommands([markerObject]);
+                    updateList.addUpdate(update);
+                });
+
+                it("single undo throws error when list is empty", function (done) {
+
+                    var updateList = new UpdateManager(undefined, function (error) {
+                        expect(error).to.be.an.instanceof(UpdateManagerModule.UndoRedoException);
+                        done();
+                    });
+
+                    var undoMarkerObject = CommandUtil.createBaseCommand(Commands.CommandType.UNDO, false);
+                    var undoUpdate = CommandUtil.createUpdateFromCommands([undoMarkerObject]);
+                    updateList.addUpdate(undoUpdate);
+                });
+
+                it("you can undo a marker (maybe it just skips over it?)", function (done) {
+                    var updateList = new UpdateManager(cleanFakeSketchManager, RequireTest.createErrorCallback(expect, done));
+                    cleanFakeSketchManager.getCurrentSketch = function () {
+                        return cleanFakeSketch
+                    };
+
+                    var submissionObject = updateList.createMarker(true, Commands.Marker.MarkerType.SUBMISSION, "pounded you to submission");
+                    var subUpdate = CommandUtil.createUpdateFromCommands([submissionObject]);
+                    updateList.addUpdate(subUpdate);
+
+                    expect(updateList.getCurrentPointer()).withMessage("a single item means pointer is at 1").to.equal(1);
+
+                    var markerObject = CommandUtil.createBaseCommand(Commands.CommandType.UNDO, false);
+                    var update = CommandUtil.createUpdateFromCommands([markerObject]);
+                    updateList.addUpdate(update);
+
+                    expect(updateList.getCurrentPointer()).withMessage("after undoing once the pointer should be at zero").to.equal(0);
+                    done();
+                });
+
+                it("a single undo", function (done) {
+                    var updateList = new UpdateManager(undefined, RequireTest.createErrorCallback(expect, done));
+
+                    var stub = sinon.stub();
+                    stub.returns(false); // we are not drawing.
+                    Commands.SrlCommand.addRedoMethod(Commands.CommandType.ASSIGN_ATTRIBUTE, function () {
+                    });
+                    Commands.SrlCommand.addUndoMethod(Commands.CommandType.ASSIGN_ATTRIBUTE, stub);
+                    var assignAt = CommandUtil.createBaseCommand(Commands.CommandType.ASSIGN_ATTRIBUTE, true);
+                    var assignUpdate = CommandUtil.createUpdateFromCommands([assignAt]);
+                    updateList.addUpdate(assignUpdate);
+
+                    expect(updateList.getCurrentPointer()).withMessage("a single item means pointer is at 1").to.equal(1);
+
+                    var markerObject = CommandUtil.createBaseCommand(Commands.CommandType.UNDO, false);
+                    var update = CommandUtil.createUpdateFromCommands([markerObject]);
+                    updateList.addUpdate(update);
+
+                    expect(updateList.getCurrentPointer()).withMessage("after undoing once the pointer should be at zero").to.equal(0);
+                    expect(stub).withMessage("Undo method for the assign should be called once").to.be.calledOnce;
+                    done();
+                });
+            });
         });
 
         mocha.run();
         /*
 
-        QUnit.module("undo and redo tests", {
-            sketch: {
-                resetSketch: function () {
-                }
-            },
-            sketchManager: new SketchSurfaceManager()
-        });
-        QUnit.test("trying to redo when you can't redo throws an error", function (assert) {
-            var done = assert.async();
+        it("double undo throws error", function (assert) {
 
-            var updateList = new UpdateManager(undefined, function (error) {
-                assert.ok(error instanceof UndoRedoException, error);
-                done();
-            });
-
-            var markerObject = CommandUtil.createBaseCommand(Commands.CommandType.REDO, false);
-            var update = CommandUtil.createUpdateFromCommands([markerObject]);
-            updateList.addUpdate(update);
-        });
-
-        QUnit.test("single undo throws error when list is empty", function (assert) {
-            var done = assert.async();
-
-            var updateList = new UpdateManager(undefined, function (error) {
-                assert.ok(error instanceof UndoRedoException, error);
-                done();
-
-            });
-
-            var undoMarkerObject = CommandUtil.createBaseCommand(Commands.CommandType.UNDO, false);
-            var undoUpdate = CommandUtil.createUpdateFromCommands([undoMarkerObject]);
-            updateList.addUpdate(undoUpdate);
-        });
-
-        QUnit.test("you can undo a marker (maybe it just skips over it?)", function (assert) {
-            var done = assert.async();
-
-            var updateList = new UpdateManager(this.sketchManager, function (error) {
-                console.log(error);
-                assert.ok(false, error);
-                done();
-            });
-
-            var localSketch = this.sketch;
-            this.sketchManager.getCurrentSketch = function () {
-                return localSketch
-            };
-
-            var submissionObject = updateList.createMarker(true, Commands.Marker.MarkerType.SUBMISSION, "pounded you to submission");
-            var subUpdate = CommandUtil.createUpdateFromCommands([submissionObject]);
-            updateList.addUpdate(subUpdate);
-
-            assert.equal(updateList.getCurrentPointer(), 1, "a single item means pointer is at 1");
-
-            var markerObject = CommandUtil.createBaseCommand(Commands.CommandType.UNDO, false);
-            var update = CommandUtil.createUpdateFromCommands([markerObject]);
-            updateList.addUpdate(update);
-
-            assert.equal(updateList.getCurrentPointer(), 0, "after undoing once the pointer should be at zero");
-            done();
-        });
-
-        QUnit.test("a single undo", function (assert) {
-            var done = assert.async();
-
-            var updateList = new UpdateManager(undefined, function (error) {
-                assert.ok(false, error);
-                done();
-            });
-
-            var stub = sinon.stub();
-            stub.returns(false); // we are not drawing.
-            Commands.SrlCommand.addRedoMethod(Commands.CommandType.ASSIGN_ATTRIBUTE, function () {
-            });
-            Commands.SrlCommand.addUndoMethod(Commands.CommandType.ASSIGN_ATTRIBUTE, stub);
-            var assignAt = CommandUtil.createBaseCommand(Commands.CommandType.ASSIGN_ATTRIBUTE, true);
-            var assignUpdate = CommandUtil.createUpdateFromCommands([assignAt]);
-            updateList.addUpdate(assignUpdate);
-
-            assert.equal(updateList.getCurrentPointer(), 1, "a single item means pointer is at 1");
-
-            var markerObject = CommandUtil.createBaseCommand(Commands.CommandType.UNDO, false);
-            var update = CommandUtil.createUpdateFromCommands([markerObject]);
-            updateList.addUpdate(update);
-
-            assert.equal(updateList.getCurrentPointer(), 0, "after undoing once the pointer should be at zero");
-            assert.ok(stub.calledOnce, "Undo method for the assign should be called once");
-
-            Commands.SrlCommand.removeRedoMethod(Commands.CommandType.ASSIGN_ATTRIBUTE);
-            Commands.SrlCommand.removeUndoMethod(Commands.CommandType.ASSIGN_ATTRIBUTE);
-            done();
-        });
-
-        QUnit.test("double undo throws error", function (assert) {
-            var done = assert.async();
             expect(1);
 
             var updateList = new UpdateManager(this.sketchManager, function (error) {
@@ -569,8 +558,8 @@ require(['DefaultSketchCommands', 'UpdateManager', 'generated_proto/commands',
             Commands.SrlCommand.removeUndoMethod(Commands.CommandType.ASSIGN_ATTRIBUTE);
         });
 
-        QUnit.test("a single undo then redo", function (assert) {
-            var done = assert.async();
+        it("a single undo then redo", function (assert) {
+
 
             var updateList = new UpdateManager(this.sketchManager, function (error) {
                 assert.ok(false, error);
@@ -610,8 +599,8 @@ require(['DefaultSketchCommands', 'UpdateManager', 'generated_proto/commands',
             done();
         });
 
-        QUnit.test("a single undo then redo using udoAction and redoAction methods", function (assert) {
-            var done = assert.async();
+        it("a single undo then redo using udoAction and redoAction methods", function (assert) {
+
 
             var updateList = new UpdateManager(undefined, function (error) {
                 assert.ok(false, error);
@@ -647,8 +636,8 @@ require(['DefaultSketchCommands', 'UpdateManager', 'generated_proto/commands',
             done();
         });
 
-        QUnit.test("a undo/redo causing a split", function (assert) {
-            var done = assert.async();
+        it("a undo/redo causing a split", function (assert) {
+
 
             var updateList = new UpdateManager(undefined, function (error) {
                 assert.ok(false, error);
@@ -689,7 +678,7 @@ require(['DefaultSketchCommands', 'UpdateManager', 'generated_proto/commands',
             done();
         });
 
-        QUnit.test("adding a Create sketch command then calling undo on it", function (assert) {
+        it("adding a Create sketch command then calling undo on it", function (assert) {
 
             var clock = sinon.useFakeTimers();
 
@@ -739,7 +728,7 @@ require(['DefaultSketchCommands', 'UpdateManager', 'generated_proto/commands',
             assert.ok(stub2.calledWith(id) && stub2.calledOnce, "delete should only happen once");
         });
 
-        QUnit.test("undoing first create sketch throws an exception", function (assert) {
+        it("undoing first create sketch throws an exception", function (assert) {
 
             var clock = sinon.useFakeTimers();
 
@@ -771,7 +760,7 @@ require(['DefaultSketchCommands', 'UpdateManager', 'generated_proto/commands',
             clock.tick(10);
         });
 
-        QUnit.test("adding a swtich sketch and then undoing that creation", function (assert) {
+        it("adding a swtich sketch and then undoing that creation", function (assert) {
 
             var clock = sinon.useFakeTimers();
 
@@ -822,7 +811,7 @@ require(['DefaultSketchCommands', 'UpdateManager', 'generated_proto/commands',
             assert.ok(stub.calledThrice, "get sketch should be called a third time after undoing");
         });
 
-        QUnit.test("undo switch sketch throws exception no previous sketch exist", function (assert) {
+        it("undo switch sketch throws exception no previous sketch exist", function (assert) {
 
             var clock = sinon.useFakeTimers();
 
@@ -857,8 +846,8 @@ require(['DefaultSketchCommands', 'UpdateManager', 'generated_proto/commands',
             },
             sketchManager: new SketchSurfaceManager()
         });
-        QUnit.test("a single split", function (assert) {
-            var done = assert.async();
+        it("a single split", function (assert) {
+
 
             var updateList = new UpdateManager(this.sketch, function (error) {
                 assert.ok(false, error);
@@ -898,8 +887,8 @@ require(['DefaultSketchCommands', 'UpdateManager', 'generated_proto/commands',
             },
         });
 
-        QUnit.test("a single split then an undo then a redo", function (assert) {
-            var done = assert.async();
+        it("a single split then an undo then a redo", function (assert) {
+
 
             var updateList = new UpdateManager(this.sketchManager, function (error) {
                 assert.ok(false, error);
@@ -961,7 +950,7 @@ require(['DefaultSketchCommands', 'UpdateManager', 'generated_proto/commands',
             },
         });
 
-        QUnit.test("plugin gets correct data for simple update", function (assert) {
+        it("plugin gets correct data for simple update", function (assert) {
             expect(5);
             var clock = sinon.useFakeTimers();
             var stub = sinon.stub();
