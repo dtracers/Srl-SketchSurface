@@ -21,7 +21,10 @@
     "qunit-once": "0.1.1",
     "sinon": "http://sinonjs.org/releases/sinon-1.17.3.js",
     "mocha": "2.5.3",
-    "chai": "*"
+    "chai": "*",
+    "chai-subset": "debitoor/chai-subset#ecb4d64e41364e6a15923dd102963b8b32eeca60",
+    "sinon-chai": "2.8.0",
+    "chai-interface": "jden/chai-interface#2.0.3"
   },
   "private": true
 }

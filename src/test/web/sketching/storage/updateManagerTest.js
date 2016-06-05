@@ -6,10 +6,9 @@ try {
 }
 
 require(['DefaultSketchCommands', 'UpdateManager', 'generated_proto/commands',
-        'generated_proto/sketchUtil', 'protobufUtils/sketchProtoConverter', 'SketchSurfaceManager'],
-    function (CommandException,UpdateManagerModule, ProtoCommands, ProtoSketchUtil, ProtoUtil, SketchSurfaceManager) {
+        'generated_proto/sketchUtil', 'protobufUtils/sketchProtoConverter', 'SketchSurfaceManager', 'RequireTest'],
+    function (CommandException,UpdateManagerModule, ProtoCommands, ProtoSketchUtil, ProtoUtil, SketchSurfaceManager, RequireTest) {
         var expect = chai.expect;
-        QUnit.config.autostart = false;
         var UpdateManager = UpdateManagerModule.UpdateManager;
         var Commands = ProtoCommands.protobuf.srl.commands;
         var SketchUtil = ProtoSketchUtil.protobuf.srl.utils;
@@ -88,36 +87,57 @@ require(['DefaultSketchCommands', 'UpdateManager', 'generated_proto/commands',
                     expect(markerData.type).to.equal(Commands.Marker.MarkerType.SAVE);
                     expect(markerData.otherData).to.equal(otherData);
                 });
+
+                it("get Clean list returns the same list but different objects", function (done) {
+                    var updateList = new UpdateManager(undefined, function (error) {
+                        console.log(error);
+                        expect(false).to.equal(true, '' + error);
+                    });
+                    Commands.SrlCommand.addRedoMethod(Commands.CommandType.ASSIGN_ATTRIBUTE, function () {
+                        return false;
+                    });
+                    Commands.SrlCommand.addUndoMethod(Commands.CommandType.ASSIGN_ATTRIBUTE, function () {
+                        return false;
+                    });
+                    for (var i = 0; i < MinListNumber; i++) {
+                        var SAVEObject = updateList.createMarker(true, Commands.Marker.MarkerType.SAVE, "SAVE the sketch!");
+                        var SAVEUpdate = CommandUtil.createUpdateFromCommands([SAVEObject]);
+                        updateList.addUpdate(SAVEUpdate);
+
+                        var markerObject = updateList.createMarker(true, Commands.Marker.MarkerType.SUBMISSION, "pounded you to submission");
+                        var update = CommandUtil.createUpdateFromCommands([markerObject]);
+                        updateList.addUpdate(update);
+
+                        var assignAt = CommandUtil.createBaseCommand(Commands.CommandType.ASSIGN_ATTRIBUTE, true);
+                        var assignUpdate = CommandUtil.createUpdateFromCommands([assignAt]);
+                        updateList.addUpdate(assignUpdate);
+                    }
+
+                    var listCallback = undefined;
+                    var listOne = updateList.getUpdateList(function (listThree) {
+                        listCallback = listThree;
+                        // do nothing it is fine;
+                    });
+                    ChaiProtobuf.updateListEqual(expect, listCallback, listOne);
+                    restoreRealTime();
+
+                    updateList.getCleanUpdateList(function (list) {
+                        expect(list.length).to.be.equal(listOne.length, "list size should be the same");
+                        for (var i = 0; i < listOne.length; i++) {
+                            expect(listOne[i]).to.not.be.equal(list[i]);
+                            ChaiProtobuf.updateEqual(expect, listOne[i], list[i]);
+                        }
+                        done();
+                    });
+                    Commands.SrlCommand.removeRedoMethod(Commands.CommandType.ASSIGN_ATTRIBUTE);
+                    Commands.SrlCommand.removeUndoMethod(Commands.CommandType.ASSIGN_ATTRIBUTE);
+                });
             })
         });
 
         mocha.run();
         /*
-        QUnit.test("creation of manager works", function (assert) {
-            var update = new UpdateManager(undefined, undefined);
-            assert.ok("no exceptions were thrown :)");
-        });
-        */
-        /*
-        QUnit.module("misc Functions", {
-            sketch: {
-                resetSketch: function () {
-                }
-            }
-        });
-        QUnit.test("createMarker returns correct value", function (assert) {
-            var update = new UpdateManager(undefined, undefined);
-            var otherData = "data";
-            var markerObject = update.createMarker(true, Commands.Marker.MarkerType.SAVE, otherData);
-            assert.ok(markerObject instanceof Commands.SrlCommand, "testing that command is an object of the correct protobuf type");
-            assert.equal(markerObject.isUserCreated, true, "testing input for userCreated matches");
-            assert.equal(markerObject.getCommandType(), Commands.CommandType.MARKER, "testing input for commandType matches");
-            assert.notEqual(markerObject.getCommandId(), null, "testing that the command Id is not null");
 
-            var markerData = ProtoUtil.decode(markerObject.getCommandData(), Commands.Marker);
-            assert.equal(markerData.type, Commands.Marker.MarkerType.SAVE);
-            assert.equal(markerData.otherData, otherData);
-        });
 
         QUnit.test("get Clean list returns the same list but different objects", function (assert) {
             var done = assert.async();

@@ -1,6 +1,6 @@
 define('UpdateManager', ['DefaultSketchCommands', 'generated_proto/commands', 'generated_proto/sketchUtil',
-    'protobufUtils/classCreator', 'protobufUtils/sketchProtoConverter', 'sketchLibrary/SketchLibraryException'],
-function(DefaultCommands, ProtoCommands, ProtoSketchUtil, ClassUtils, ProtoUtil, SketchException) {
+    'protobufUtils/classCreator', 'protobufUtils/sketchProtoConverter', 'sketchLibrary/SketchLibraryException', 'sketchLibrary/ArrayUtils'],
+function(DefaultCommands, ProtoCommands, ProtoSketchUtil, ClassUtils, ProtoUtil, SketchException, ArrayUtils) {
     var Commands = ProtoCommands.protobuf.srl.commands;
     var SketchUtil = ProtoSketchUtil.protobuf.srl.utils;
     var CommandUtil = ProtoUtil.commands;
@@ -246,7 +246,7 @@ function(DefaultCommands, ProtoCommands, ProtoSketchUtil, ClassUtils, ProtoUtil,
          */
         function executeUpdateLocked() {
             executionLock = true;
-            var nextUpdate = removeObjectByIndex(queuedLocalUpdates, 0);
+            var nextUpdate = ArrayUtils.removeObjectByIndex(queuedLocalUpdates, 0);
             var updateCreatedByPlugin = nextUpdate.pluginId;
             try {
                 var redraw = executeUpdate(nextUpdate);
@@ -417,7 +417,7 @@ function(DefaultCommands, ProtoCommands, ProtoSketchUtil, ClassUtils, ProtoUtil,
             var command = update.getCommands()[0];
             // Marker will not have any other commands with its update
             if (command.commandType === Commands.CommandType.MARKER) {
-                var marker = ProtoUtil.decode(command.commandData, Commands.Markrt);
+                var marker = ProtoUtil.decode(command.commandData, Commands.Marker);
                 if (marker.type === Commands.Marker.MarkerType.SPLIT) {
                     var tempIndex = currentUpdateIndex;
                     currentUpdateIndex += parseInt(marker.otherData, 10) + 1;

@@ -1,4 +1,6 @@
 <head>
+
+    <link rel="import" href="/src/sketching/utilities/RequireJs.html">
     <!-- Caches the timing function so I can restore them at any time. -->
     <script>
         var setRealTimeout = (function (scope) {
@@ -36,20 +38,8 @@
         }
     </script>
 
-    <link rel="stylesheet" href="/bower_components/qunit/qunit/qunit.css">
     <link rel="stylesheet" href="/bower_components/mocha/mocha.css">
     <script src="/bower_components/jquery/dist/jquery.js"></script>
-    <script src="/bower_components/qunit/qunit/qunit.js"></script>
-    <script src="/bower_components/mocha/mocha.js"></script>
-    <script src="/bower_components/chai/chai.js"></script>
-    <!-- http://sinonjs.org/qunit/ -->
-    <script src="/bower_components/sinon/index.js"></script>
-    <!-- mocking framework -->
-    <script src="sinon-qunit-1.0.0.js"></script>
-    <!-- qunit mocking framework -->
-
-    <script src="/bower_components/qunit-once/qunit-once.js"></script>
-    <!-- qunit once nice and helpful for making a teardownOnce and setupOnce method -->
 
     <!-- simulates an event on an element. -->
     <script src="eventSimulator.js"></script>
@@ -60,10 +50,22 @@
     <script src="ExceptionTester.js"></script>
 
     <!-- qunit extensions -->
-    <script src="qunit-protobuf.js"></script>
     <script>
-        QUnit.config.testTimeout = 5000;
     </script>
-    <script>mocha.setup('bdd');</script>
-    <script>mocha.checkLeaks();</script>
+
+    <script>
+        require.config({
+            paths: {
+                "chai-protobuf": '/test/testUtilities/chai-protobuf',
+                "sinon-chai":  'sinon-chai/lib/sinon-chai',
+                "sinon": 'sinon/index',
+                "chai": 'chai/chai',
+                "mocha": 'mocha/mocha',
+                "RequireTest": '/test/testUtilities/RequireTest'
+            },
+            shim: {
+                mocha: { exports: 'mocha' }
+            }
+        });
+    </script>
 </head>

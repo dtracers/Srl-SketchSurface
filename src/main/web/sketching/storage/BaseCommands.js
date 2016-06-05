@@ -19,8 +19,8 @@ function(ProtoCommands, ProtoSketchUtil, ProtoUtil, ClassUtils, SketchException)
     }
     ClassUtils.Inherits(CommandException, SketchException);
 
-    var ProtoSrlUpdate = Object.getPrototypeOf(Object.create(Commands.SrlUpdate));
-    var ProtoSrlCommand = Object.getPrototypeOf(Object.create(Commands.SrlCommand));
+    var ProtoSrlUpdate = Commands.SrlUpdate.prototype;
+    var ProtoSrlCommand = Commands.SrlCommand.prototype;
 
     Commands.SrlCommand.prototype.sketchId = undefined;
     Commands.SrlUpdate.prototype.sketchId = undefined;
