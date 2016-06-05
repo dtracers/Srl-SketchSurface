@@ -1,22 +1,28 @@
 <html>
 <head>
 <!-- Utilities -->
-<script src="/src/utilities/functions/base.js"></script>
-<script src="/src/utilities/functions/objectAndInheritance.js"></script>
-
-<!-- Objects used by all classes -->
-<script src="objects/boundingbox.js"></script>
-<script src="objects/interpretation.js"></script>
-
-<!-- base class -->
-<script src="objects/overload.js"></script>
-
-<!-- srl -->
-<script src="objects/sketch.js"></script>
-<script src="objects/object.js"></script>
-<script src="objects/shape.js"></script>
-<script src="objects/stroke.js"></script>
-<script src="objects/point.js"></script>
-
+    <script src="/bower_components/requirejs/require.js"></script>
+    <script>
+        require.config({
+            baseUrl: "/bower_components",
+            paths: {
+                "stacktrace-js": "stacktrace-js/dist/stacktrace",
+                "long": "long/dist/long",
+                "bytebuffer": "bytebuffer/dist/bytebuffer",
+                "protobufjs": "protobufjs/dist/protobuf",
+                'paperjs' : "paper/dist/paper-core"
+            },
+            shim: {
+                'paperjs' : {
+                    init: function () {
+                        return {
+                            paper: paper,
+                            Key: key
+                        }
+                    }
+                }
+            }
+        });
+    </script>
 </head>
 </html>

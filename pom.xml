@@ -155,6 +155,7 @@
         <sourceDirectory>${basedir}/src/main/web</sourceDirectory>
         <testDirectory>${basedir}/src/test/web</testDirectory>
         <nodeVersion>v4.2.2</nodeVersion>
+        <sketchFrameworkVersion>js1.0.0</sketchFrameworkVersion>
     </properties>
 
     <reporting>
@@ -181,13 +182,37 @@
                                 <artifactItem>
                                     <groupId>com.github.dtracers</groupId>
                                     <artifactId>SketchRecognitionFramework</artifactId>
-                                    <version>-SNAPSHOT</version>
+                                    <version>${sketchFrameworkVersion}</version>
                                     <type>jar</type>
                                     <overWrite>true</overWrite>
-                                    <outputDirectory>${basedir}/src/main/resources/protobuf</outputDirectory>
-                                    <includes>**/*.proto</includes>
+                                    <outputDirectory>${basedir}/target/temp</outputDirectory>
+                                    <includes>website/**/*.js</includes>
                                 </artifactItem>
                             </artifactItems>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-resources-plugin</artifactId>
+                <version>3.0.0</version>
+                <executions>
+                    <execution>
+                        <id>copy-resources</id>
+                        <!-- here the phase you need -->
+                        <phase>initialize</phase>
+                        <goals>
+                            <goal>copy-resources</goal>
+                        </goals>
+                        <configuration>
+                            <outputDirectory>${basedir}/bower_components</outputDirectory>
+                            <resources>
+                                <resource>
+                                    <directory>${basedir}/target/temp/website</directory>
+                                    <filtering>true</filtering>
+                                </resource>
+                            </resources>
                         </configuration>
                     </execution>
                 </executions>
@@ -250,7 +275,7 @@
         <dependency>
             <groupId>com.github.dtracers</groupId>
             <artifactId>SketchRecognitionFramework</artifactId>
-            <version>-SNAPSHOT</version>
+            <version>${sketchFrameworkVersion}</version>
         </dependency>
     </dependencies>
 

@@ -17,34 +17,34 @@
 	<div id="qunit-fixture"></div>
 
   <script>
-	QUnit.module("SRL_Stroke:addPoint");
-	 test("SRL_Stroke:addPoint", function(assert) {
-    var stroke = new  SRL_Stroke();
+	QUnit.module("SrlStroke:addPoint");
+	 test("SrlStroke:addPoint", function(assert) {
+    var stroke = new  SrlStroke();
     var point = [0,0,1,1];
     stroke.addPoint(point);
     });
     </script>
 
   <script>
-  QUnit.module("SRL_Stroke:getPoints");
-   test("SRL_Stroke:addPoint", function(assert) {
-    var stroke = new  SRL_Stroke();
+  QUnit.module("SrlStroke:getPoints");
+   test("SrlStroke:addPoint", function(assert) {
+    var stroke = new  SrlStroke();
     stroke.getPoints();
     });
     </script>
 
   <script>
-  QUnit.module("SRL_Stroke:finish");
-   test("SRL_Stroke:finish", function(assert) {
-    var stroke = new  SRL_Stroke();
+  QUnit.module("SrlStroke:finish");
+   test("SrlStroke:finish", function(assert) {
+    var stroke = new  SrlStroke();
     stroke.finish();
     });
     </script>
 
   <script>
-  QUnit.module("SRL_Stroke:get and remove SubObjectById");
-   test("SRL_Stroke:getSubObjectById", function(assert) {
-    var stroke = new  SRL_Stroke();
+  QUnit.module("SrlStroke:get and remove SubObjectById");
+   test("SrlStroke:getSubObjectById", function(assert) {
+    var stroke = new  SrlStroke();
     stroke.getSubObjectById();
     var fakeId = "1234";
     stroke.getSubObjectById(fakeId);
@@ -54,27 +54,27 @@
     </script>
 
   <script>
-  QUnit.module("SRL_Stroke:removeSubObject");
-   test("SRL_Stroke:removeSubObject", function(assert) {
-    var stroke = new  SRL_Stroke();
-    var fakeObject = new SRL_Object();
+  QUnit.module("SrlStroke:removeSubObject");
+   test("SrlStroke:removeSubObject", function(assert) {
+    var stroke = new  SrlStroke();
+    var fakeObject = new SrlObject();
     stroke.removeSubObject();
     stroke.removeSubObject(fakeObject);
     });
     </script>
 
   <script>
-  QUnit.module("SRL_Stroke:getSubObjects");
-   test("SRL_Stroke:getSubObjects", function(assert) {
-    var stroke = new  SRL_Stroke();
+  QUnit.module("SrlStroke:getSubObjects");
+   test("SrlStroke:getSubObjects", function(assert) {
+    var stroke = new  SrlStroke();
     stroke.getSubObjects();
     });
     </script>
-  
+
   <script>
-  QUnit.module("SRL_Stroke:getNumPoints,FirstPoint,LastPoint,getStrokeIntersector");
-   test("SRL_Stroke:getSubObjects", function(assert) {
-    var stroke = new  SRL_Stroke();
+  QUnit.module("SrlStroke:getNumPoints,FirstPoint,LastPoint,getStrokeIntersector");
+   test("SrlStroke:getSubObjects", function(assert) {
+    var stroke = new  SrlStroke();
     stroke.getNumPoints();
     stroke.getFirstPoint();
     stroke.getLastPoint();
@@ -83,59 +83,59 @@
     </script>
 
   <script>
-  QUnit.module("SRL_Stroke:getEuclideanDistance");
-   test("SRL_Stroke:getSubObjects", function(assert) {
-    var stroke = new  SRL_Stroke();
+  QUnit.module("SrlStroke:getEuclideanDistance");
+   test("SrlStroke:getSubObjects", function(assert) {
+    var stroke = new  SrlStroke();
     stroke.getEuclideanDistance();
     });
     </script>
 
   <script>
-  QUnit.module("SRL_Stroke:getAngles");
-   test("SRL_Stroke:getAngles", function(assert) {
-    var stroke = new  SRL_Stroke();
+  QUnit.module("SrlStroke:getAngles");
+   test("SrlStroke:getAngles", function(assert) {
+    var stroke = new  SrlStroke();
     stroke.getEndAngleCosine();
     stroke.getEndAngleSine();
     });
     </script>
 
   <script>
-  QUnit.module("SRL_Stroke:getStrokeLength");
-   test("SRL_Stroke:getStrokeLength", function(assert) {
-    var stroke = new  SRL_Stroke();
+  QUnit.module("SrlStroke:getStrokeLength");
+   test("SrlStroke:getStrokeLength", function(assert) {
+    var stroke = new  SrlStroke();
     stroke.getStrokeLength();
     });
     </script>
 
   <script>
-  QUnit.module("SRL_Stroke:time");
-   test("SRL_Stroke:time", function(assert) {
-    var stroke = new  SRL_Stroke();
+  QUnit.module("SrlStroke:time");
+   test("SrlStroke:time", function(assert) {
+    var stroke = new  SrlStroke();
     stroke.getTotalTime();
     stroke.removeTimeDuplicates();
     });
     </script>
 
   <script>
-  QUnit.module("SRL_Stroke:removeCoordinateDuplicates");
-   test("SRL_Stroke:removeCoordinateDuplicates", function(assert) {
-    var stroke = new  SRL_Stroke();
+  QUnit.module("SrlStroke:removeCoordinateDuplicates");
+   test("SrlStroke:removeCoordinateDuplicates", function(assert) {
+    var stroke = new  SrlStroke();
     stroke.removeCoordinateDuplicates();
     });
     </script>
 
   <script>
-  QUnit.module("SRL_Stroke:speed");
-   test("SRL_Stroke:speed", function(assert) {
-    var stroke = new  SRL_Stroke();
+  QUnit.module("SrlStroke:speed");
+   test("SrlStroke:speed", function(assert) {
+    var stroke = new  SrlStroke();
     stroke.getMaximumSpeed();
     });
     </script>
 
   <script>
-  QUnit.module("SRL_Stroke:rotation");
-   test("SRL_Stroke:rotation", function(assert) {
-    var stroke = new  SRL_Stroke();
+  QUnit.module("SrlStroke:rotation");
+   test("SrlStroke:rotation", function(assert) {
+    var stroke = new  SrlStroke();
     stroke.getRotationSum();
     stroke.getRotationAbsolute();
     stroke.getRotationSquared();

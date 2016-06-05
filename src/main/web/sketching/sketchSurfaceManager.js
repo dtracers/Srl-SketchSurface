@@ -11,14 +11,14 @@ function SketchSurfaceManager(sketchSurface) {
     var parentSketch = undefined;
 
     /**
-     * @type {SRL_Sketch}
+     * @type {SrlSketch}
      */
     var currentSketch = undefined;
 
     /**
      * Sets the parent sketch.
      *
-     * @param {SRL_Sketch} sketch - The top level sketch.
+     * @param {SrlSketch} sketch - The top level sketch.
      */
     this.setParentSketch = function(sketch) {
         parentSketch = sketch;
@@ -42,7 +42,7 @@ function SketchSurfaceManager(sketchSurface) {
      * Adds the sketch with its Id to the list of sketches related to this sketch surface.
      * (replaces an old sketch with the same id if it already exist in the list).
      *
-     * @param {SRL_Sketch} sketch - The sketch that is being set.
+     * @param {SrlSketch} sketch - The sketch that is being set.
      */
     this.setSketch = function(sketch) {
         if (isUndefined(sketch.id)) {
@@ -54,7 +54,7 @@ function SketchSurfaceManager(sketchSurface) {
 
     /**
      * @param {UUID} id - The id of the sketch that is being grabbed.
-     * @returns {SRL_Sketch} a sketch based off of its id.
+     * @returns {SrlSketch} a sketch based off of its id.
      */
     this.getSketch = function(id) {
         return sketchMap.get(id);
@@ -68,7 +68,7 @@ function SketchSurfaceManager(sketchSurface) {
      * @param {SrlSketch} sketchData - currently ignored.
      */
     this.createSketch = function(id, sketchData) {
-        var sketch = new SRL_Sketch();
+        var sketch = new SrlSketch();
         sketch.id = id;
         this.setSketch(sketch);
     };
@@ -83,7 +83,7 @@ function SketchSurfaceManager(sketchSurface) {
     };
 
     /**
-     * @returns {SRL_Sketch} The current sketch that is being used by this sketch surface.
+     * @returns {SrlSketch} The current sketch that is being used by this sketch surface.
      */
     this.getCurrentSketch = function() {
         return currentSketch;

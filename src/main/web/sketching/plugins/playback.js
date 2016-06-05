@@ -43,7 +43,7 @@ function Playback(updateList, updateManager, graphics) {
     /**
      * Last point that was added to the canvas.
      *
-     * @type {SRL_Point}
+     * @type {SrlPoint}
      */
     var lastPointAdded = undefined;
     var pointList;

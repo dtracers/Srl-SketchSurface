@@ -25,17 +25,17 @@
     <script>
 	QUnit.module("BoundingBox:creation");
 	QUnit.test("main BoundingBox function creation", function(assert) {
-    var boxTest = new SRL_BoundingBox();
+    var boxTest = new SrlBoundingBox();
        //box.addPoint(1,1);
     assert.ok(true);
        //except(0);
     });
     </script>
-    
+
    <script>
     QUnit.module("BoundingBox:add point");
     QUnit.test("main BoundingBox function {add point}", function(assert) {
-      var boxAndPointTest = new SRL_BoundingBox();
+      var boxAndPointTest = new SrlBoundingBox();
       boxAndPointTest.addPoint({
         getX:function(){return 0;},
         getY:function(){return 0;}
@@ -48,7 +48,7 @@
     <script>
     QUnit.module("BoundingBox:contains point");
     QUnit.test("main BoundingBox function {contains point}", function(assert) {
-      var boxAndPointTest = new SRL_BoundingBox();
+      var boxAndPointTest = new SrlBoundingBox();
       boxAndPointTest.addPoint({
         getX:function(){return 0;},
         getY:function(){return 0;}
@@ -65,7 +65,7 @@
     <script>
     QUnit.module("BoundingBox:add coordinate");
     QUnit.test("main BoundingBox:add coordinate}", function(assert) {
-      var boxAndCoordinateTest = new SRL_BoundingBox();
+      var boxAndCoordinateTest = new SrlBoundingBox();
       boxAndCoordinateTest.addCoordinate(1,1);
       assert.ok(true);
        //except(0);
@@ -75,7 +75,7 @@
     <script>
     QUnit.module("BoundingBox:contains coordinate");
     QUnit.test("main BoundingBox:contains coordinate}", function(assert) {
-      var boxAndContainsCoordinateTest = new SRL_BoundingBox();
+      var boxAndContainsCoordinateTest = new SrlBoundingBox();
       boxAndContainsCoordinateTest.addCoordinate(1,1);
       boxAndContainsCoordinateTest.containsCoordinate(1,1);
       assert.ok(true);
@@ -86,7 +86,7 @@
     <script>
     QUnit.module("BoundingBox:set indexes");
     QUnit.test("main BoundingBox:set Indexes}", function(assert) {
-      var boxAndSetIndexesTest = new SRL_BoundingBox();
+      var boxAndSetIndexesTest = new SrlBoundingBox();
       boxAndSetIndexesTest.setIndexes(0,0);
         assert.ok(true);
        //except(0);
@@ -97,18 +97,18 @@
     <script>
     QUnit.module("BoundingBox:scaleFunction");
     QUnit.test("main BoundingBox:scale", function(assert) {
-      var boxAndScaleTest = new SRL_BoundingBox();
+      var boxAndScaleTest = new SrlBoundingBox();
       boxAndScaleTest.scale(100);
       assert.ok(true);
        //except(0);
     });
     </script>
-    
+
     <script>
     QUnit.module("BoundingBox:addSubobject");
     QUnit.test("main BoundingBox:subobject", function(assert) {
-      var boxAndSubObjectTest = new SRL_BoundingBox();
-      var subObject1 = new SRL_BoundingBox();
+      var boxAndSubObjectTest = new SrlBoundingBox();
+      var subObject1 = new SrlBoundingBox();
       boxAndSubObjectTest.addSubObject(subObject1);
       assert.ok(true);
        //except(0);
@@ -118,7 +118,7 @@
     <script>
     QUnit.module("BoundingBox:getExtremeValues");
     QUnit.test("main BoundingBox:getExtremeValues", function(assert) {
-      var boxAndGetExtremes = new SRL_BoundingBox();
+      var boxAndGetExtremes = new SrlBoundingBox();
       boxAndGetExtremes.getExtremeValues();
       assert.ok(true);
        //except(0);
@@ -128,7 +128,7 @@
     <script>
     QUnit.module("BoundingBox:getRectangle");
     QUnit.test("main BoundingBox:getRectangle", function(assert) {
-      var boxAndGetRectangleTest = new SRL_BoundingBox()
+      var boxAndGetRectangleTest = new SrlBoundingBox()
       boxAndGetRectangleTest.getRectangle();
       assert.ok(true);
        //except(0);
@@ -138,7 +138,7 @@
     <script>
     QUnit.module("BoundingBox:getArea");
     QUnit.test("main BoundingBox:getArea", function(assert) {
-      var boxAndGetArea = new SRL_BoundingBox()
+      var boxAndGetArea = new SrlBoundingBox()
       boxAndGetArea.getArea();
       assert.ok(true);
        //except(0);
@@ -148,7 +148,7 @@
     <script>
     QUnit.module("BoundingBox:union");
     QUnit.test("main BoundingBox:union", function(assert) {
-      var boxAndUnion = new SRL_BoundingBox();
+      var boxAndUnion = new SrlBoundingBox();
       boxAndUnion.union();
       assert.ok(true);
        //except(0);

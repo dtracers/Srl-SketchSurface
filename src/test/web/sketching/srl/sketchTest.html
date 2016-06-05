@@ -22,21 +22,21 @@
         assert.ok(true, "TESTING IS AWESOME!");
     });
     </script>
-    
+
     <script>
 	QUnit.module("sketch:superConstructor");
 	test("sketch:superConstructor", function(assert) {
-    var sketchTest = new SRL_Sketch();
+    var sketchTest = new SrlSketch();
     sketchTest.superConstructor();
     assert.ok(true);
 
     });
     </script>
-    
+
     <script>
     QUnit.module("sketch:addObject");
     test("sketch:superConstructor", function(assert) {
-    var sketchTest = new SRL_Sketch();
+    var sketchTest = new SrlSketch();
     sketchTest.addObject();
     assert.ok(true);
 
@@ -46,7 +46,7 @@
     <script>
     QUnit.module("sketch:addSubObject");
     test("sketch:addSubObject", function(assert) {
-    var sketchTest = new SRL_Sketch();
+    var sketchTest = new SrlSketch();
     sketchTest.addSubObject();
     assert.ok(true);
 
@@ -56,8 +56,8 @@
     <script>
     QUnit.module("sketch:removeSubObject");
     test("sketch:removeSubObject", function(assert) {
-    var sketchTest = new SRL_Sketch();
-    var Object1 = new SRL_Object();
+    var sketchTest = new SrlSketch();
+    var Object1 = new SrlObject();
     sketchTest.removeSubObject(Object1);
     assert.ok(true);
 
@@ -67,7 +67,7 @@
     <script>
     QUnit.module("sketch:removeSubObjectById");
     test("sketch:removeSubObjectById", function(assert) {
-    var sketchTest = new SRL_Sketch();
+    var sketchTest = new SrlSketch();
     sketchTest.removeSubObjectById();
     assert.ok(true);
 
@@ -77,7 +77,7 @@
     <script>
     QUnit.module("sketch:getList");
     test("sketch:getList", function(assert) {
-    var sketchTest = new SRL_Sketch();
+    var sketchTest = new SrlSketch();
     sketchTest.getList();
     assert.ok(true);
 
@@ -87,7 +87,7 @@
     <script>
     QUnit.module("sketch:getSubObjectById");
     test("sketch:getSubObjectById", function(assert) {
-    var sketchTest = new SRL_Sketch();
+    var sketchTest = new SrlSketch();
     sketchTest.getSubObjectById();
     assert.ok(true);
 
@@ -97,7 +97,7 @@
     <script>
     QUnit.module("sketch:getSubObjectAtIndex");
     test("sketch:getSubObjectAtIndex", function(assert) {
-    var sketchTest = new SRL_Sketch();
+    var sketchTest = new SrlSketch();
     sketchTest.getSubObjectAtIndex();
     assert.ok(true);
 
@@ -107,7 +107,7 @@
     <script>
     QUnit.module("sketch:removeSubObjectAtIndex");
     test("sketch:removeSubObjectAtIndex", function(assert) {
-    var sketchTest = new SRL_Sketch();
+    var sketchTest = new SrlSketch();
     sketchTest.removeSubObjectAtIndex();
     assert.ok(true);
 
@@ -117,7 +117,7 @@
     <script>
     QUnit.module("sketch:getSubObjectByIdChain");
     test("sketch:getSubObjectByIdChain", function(assert) {
-    var sketchTest = new SRL_Sketch();
+    var sketchTest = new SrlSketch();
     sketchTest.getSubObjectByIdChain();
     assert.ok(true);
 
@@ -127,22 +127,22 @@
     <script>
     QUnit.module("sketch:removeSubObjectByIdChain");
     test("sketch:removeSubObjectByIdChain", function(assert) {
-    var sketchTest = new SRL_Sketch();
+    var sketchTest = new SrlSketch();
     sketchTest.removeSubObjectByIdChain();
     assert.ok(true);
 
     });
-    </script>  
+    </script>
 
     <script>
     QUnit.module("sketch:resetSketch");
     test("sketch:resetSketch", function(assert) {
-    var sketchTest = new SRL_Sketch();
+    var sketchTest = new SrlSketch();
     sketchTest.resetSketch();
     assert.ok(true);
 
     });
-    </script>     
+    </script>
 
     <script>
 

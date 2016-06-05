@@ -1,5 +1,3 @@
-validateFirstGlobalRun(document.currentScript, CourseSketch);
-
 /*******************************************************************************
  * METHODS FOR THE REDO AND UNDO ARE BELOW.
  *
@@ -7,7 +5,12 @@ validateFirstGlobalRun(document.currentScript, CourseSketch);
  *
  * @overview This file holds the redo and undo methods for the default sketch command.
  ******************************************************************************/
-(function() {
+define('DefaultSketchCommands', ['BaseCommands', 'generated_proto/commands', 'generated_proto/sketchUtil', 'protobufUtils/sketchProtoConverter',
+    'sketchLibrary/SrlStroke', 'sketchLibrary/SrlShape'],
+function(BaseCommands, ProtoCommands, ProtoSketchUtil, ProtoUtil, SrlStroke, SrlShape) {
+    var Commands = ProtoCommands.protobuf.srl.commands;
+    var SketchUtil = ProtoSketchUtil.protobuf.srl.utils;
+    var CommandUtil = ProtoUtil.commands;
 
     /**
      * Removes all elements of the sketch.
@@ -15,7 +18,7 @@ validateFirstGlobalRun(document.currentScript, CourseSketch);
      * @returns {Boolean} true. This will always ask for the sketch to be
      *          redrawn.
      */
-    CourseSketch.prutil.getSrlCommandClass().addRedoMethod(CourseSketch.prutil.CommandType.CLEAR, function() {
+    Commands.SrlCommand.addRedoMethod(Commands.CommandType.CLEAR, function() {
         var sketch = this.getLocalSketchSurface();
         var objects = sketch.resetSketch();
         this.decodedData = objects;
@@ -28,7 +31,7 @@ validateFirstGlobalRun(document.currentScript, CourseSketch);
      * @returns {Boolean} true. This will always ask for the sketch to be
      *          redrawn.
      */
-    CourseSketch.prutil.getSrlCommandClass().addUndoMethod(CourseSketch.prutil.CommandType.CLEAR, function() {
+    Commands.SrlCommand.addUndoMethod(Commands.CommandType.CLEAR, function() {
         var sketch = this.getLocalSketchSurface();
         sketch.addAllSubObjects(this.decodedData);
         this.decodedData = undefined;
@@ -40,7 +43,7 @@ validateFirstGlobalRun(document.currentScript, CourseSketch);
      *
      * @returns {Boolean} true.  because if we switch sketch we should probably do something about it.
      */
-    CourseSketch.prutil.getSrlCommandClass().addRedoMethod(CourseSketch.prutil.CommandType.CREATE_SKETCH, function() {
+    Commands.SrlCommand.addRedoMethod(Commands.CommandType.CREATE_SKETCH, function() {
         return true;
     });
 
@@ -49,7 +52,7 @@ validateFirstGlobalRun(document.currentScript, CourseSketch);
      *
      * @returns {Boolean} true.  because if we switch sketch we should probably do something about it.
      */
-    CourseSketch.prutil.getSrlCommandClass().addRedoMethod(CourseSketch.prutil.CommandType.SWITCH_SKETCH, function() {
+    Commands.SrlCommand.addRedoMethod(Commands.CommandType.SWITCH_SKETCH, function() {
         return true;
     });
 
@@ -58,7 +61,7 @@ validateFirstGlobalRun(document.currentScript, CourseSketch);
      *
      * @returns {Boolean} true.  because if we switch sketch we should probably do something about it.
      */
-    CourseSketch.prutil.getSrlCommandClass().addUndoMethod(CourseSketch.prutil.CommandType.CREATE_SKETCH, function() {
+    Commands.SrlCommand.addUndoMethod(Commands.CommandType.CREATE_SKETCH, function() {
         return true;
     });
 
@@ -67,7 +70,7 @@ validateFirstGlobalRun(document.currentScript, CourseSketch);
      *
      * @returns {Boolean} true.  because if we switch sketch we should probably do something about it.
      */
-    CourseSketch.prutil.getSrlCommandClass().addUndoMethod(CourseSketch.prutil.CommandType.SWITCH_SKETCH, function() {
+    Commands.SrlCommand.addUndoMethod(Commands.CommandType.SWITCH_SKETCH, function() {
         return true;
     });
 
@@ -77,10 +80,10 @@ validateFirstGlobalRun(document.currentScript, CourseSketch);
      * @returns {Boolean} true. This will always ask for the sketch to be
      *          redrawn.
      */
-    CourseSketch.prutil.getSrlCommandClass().addRedoMethod(CourseSketch.prutil.CommandType.ADD_STROKE, function() {
+    Commands.SrlCommand.addRedoMethod(Commands.CommandType.ADD_STROKE, function() {
         if (!this.decodedData) {
-            var stroke = CourseSketch.prutil.decodeProtobuf(this.commandData, CourseSketch.prutil.getProtoSrlStrokeClass());
-            this.decodedData = SRL_Stroke.createFromProtobuf(stroke);
+            var stroke = ProtoUtil.decodeProtobuf(this.commandData, SrlStroke);
+            this.decodedData = SrlStroke.createFromProtobuf(stroke);
         }
         this.getLocalSketchSurface().addObject(this.decodedData);
         return true;
@@ -92,10 +95,10 @@ validateFirstGlobalRun(document.currentScript, CourseSketch);
      * @returns {Boolean} true. This will always ask for the sketch to be
      *          redrawn.
      */
-    CourseSketch.prutil.getSrlCommandClass().addUndoMethod(CourseSketch.prutil.CommandType.ADD_STROKE, function() {
+    Commands.SrlCommand.addUndoMethod(Commands.CommandType.ADD_STROKE, function() {
         if (!this.decodedData) {
-            var stroke = CourseSketch.prutil.decodeProtobuf(this.commandData, CourseSketch.prutil.getProtoSrlStrokeClass());
-            this.decodedData = SRL_Stroke.createFromProtobuf(stroke);
+            var stroke = ProtoUtil.decodeProtobuf(this.commandData, SrlStroke);
+            this.decodedData = SrlStroke.createFromProtobuf(stroke);
         }
         this.getLocalSketchSurface().removeSubObjectById(this.decodedData.getId());
         return true;
@@ -107,10 +110,10 @@ validateFirstGlobalRun(document.currentScript, CourseSketch);
      * @returns {Boolean} false. This will never ask for the sketch to be
      *          redrawn.
      */
-    CourseSketch.prutil.getSrlCommandClass().addRedoMethod(CourseSketch.prutil.CommandType.ADD_SHAPE, function() {
+    Commands.SrlCommand.addRedoMethod(Commands.CommandType.ADD_SHAPE, function() {
         if (!this.decodedData) {
-            var shape = CourseSketch.prutil.decodeProtobuf(this.commandData, CourseSketch.prutil.getProtoSrlShapeClass());
-            this.decodedData = SRL_Shape.createFromProtobuf(shape);
+            var shape = ProtoUtil.decodeProtobuf(this.commandData, SrlShape);
+            this.decodedData = SrlShape.createFromProtobuf(shape);
         }
         this.getLocalSketchSurface().addObject(this.decodedData);
         return false;
@@ -122,10 +125,10 @@ validateFirstGlobalRun(document.currentScript, CourseSketch);
      * @returns {Boolean} false. This will never ask for the sketch to be
      *          redrawn.
      */
-    CourseSketch.prutil.getSrlCommandClass().addUndoMethod(CourseSketch.prutil.CommandType.ADD_SHAPE, function() {
+    Commands.SrlCommand.addUndoMethod(Commands.CommandType.ADD_SHAPE, function() {
         if (!this.decodedData) {
-            var shape = CourseSketch.prutil.decodeProtobuf(this.commandData, CourseSketch.prutil.getProtoSrlShapeClass());
-            this.decodedData = SRL_Shape.createFromProtobuf(shape);
+            var shape = ProtoUtil.decodeProtobuf(this.commandData, SrlShape);
+            this.decodedData = SrlShape.createFromProtobuf(shape);
         }
         this.getLocalSketchSurface().removeSubObjectById(this.decodedData.getId());
         this.getLocalSketchSurface().addObject(this.decodedData);
@@ -138,10 +141,10 @@ validateFirstGlobalRun(document.currentScript, CourseSketch);
      * @returns {Boolean} true. This will always ask for the sketch to be
      *          redrawn.
      */
-    CourseSketch.prutil.getSrlCommandClass().addRedoMethod(CourseSketch.prutil.CommandType.REMOVE_OBJECT, function() {
+    Commands.SrlCommand.addRedoMethod(Commands.CommandType.REMOVE_OBJECT, function() {
         if (!this.decodedData || !isArray(this.decodedData)) {
             this.decodedData = [];
-            var idChain = CourseSketch.prutil.decodeProtobuf(this.commandData, CourseSketch.prutil.getIdChainClass());
+            var idChain = ProtoUtil.decodeProtobuf(this.commandData, ProtoSketchUtil.IdChain);
             this.decodedData[0] = idChain;
         }
         this.decodedData[1] = this.getLocalSketchSurface().removeSubObjectByIdChain(this.decodedData[0].idChain);
@@ -155,10 +158,10 @@ validateFirstGlobalRun(document.currentScript, CourseSketch);
      * @returns {Boolean} true. This will always ask for the sketch to be
      *          redrawn.
      */
-    CourseSketch.prutil.getSrlCommandClass().addUndoMethod(CourseSketch.prutil.CommandType.REMOVE_OBJECT, function() {
+    Commands.SrlCommand.addUndoMethod(Commands.CommandType.REMOVE_OBJECT, function() {
         if (!this.decodedData || !isArray(this.decodedData)) {
             this.decodedData = [];
-            var idChain = CourseSketch.prutil.decodeProtobuf(this.commandData, CourseSketch.prutil.getIdChainClass());
+            var idChain = ProtoUtil.decodeProtobuf(this.commandData, ProtoSketchUtil.IdChain);
             this.decodedData[0] = idChain;
         }
         this.getLocalSketchSurface().addObject(this.decodedData[1]);
@@ -173,9 +176,9 @@ validateFirstGlobalRun(document.currentScript, CourseSketch);
      *          redrawn. TODO: change it so that it knows what sketch it is
      *          associated with.
      */
-    CourseSketch.prutil.getSrlCommandClass().addRedoMethod(CourseSketch.prutil.CommandType.PACKAGE_SHAPE, function() {
+    Commands.SrlCommand.addRedoMethod(Commands.CommandType.PACKAGE_SHAPE, function() {
         if (isUndefined(this.decodedData) || (!this.decodedData)) {
-            this.decodedData = CourseSketch.prutil.decodeProtobuf(this.commandData, CourseSketch.prutil.getActionPackageShapeClass());
+            this.decodedData = ProtoUtil.decodeProtobuf(this.commandData, Commands.ActionPackageShape);
         }
         this.decodedData.redo(this.getLocalSketchSurface());
         return false;
@@ -187,9 +190,9 @@ validateFirstGlobalRun(document.currentScript, CourseSketch);
      * @returns {Boolean} false. This will never ask for the sketch to be
      *          redrawn.
      */
-    CourseSketch.prutil.getSrlCommandClass().addUndoMethod(CourseSketch.prutil.CommandType.PACKAGE_SHAPE, function() {
+    Commands.SrlCommand.addUndoMethod(Commands.CommandType.PACKAGE_SHAPE, function() {
         if (isUndefined(this.decodedData) || (!this.decodedData)) {
-            this.decodedData = CourseSketch.prutil.decodeProtobuf(this.commandData, CourseSketch.prutil.getActionPackageShapeClass());
+            this.decodedData = ProtoUtil.decodeProtobuf(this.commandData, Commands.ActionPackageShape);
         }
         this.decodedData.undo(this.getLocalSketchSurface());
         return false;
@@ -202,17 +205,17 @@ validateFirstGlobalRun(document.currentScript, CourseSketch);
     /**
      * @returns {String} the human readable name of the given marker type.
      */
-    CourseSketch.prutil.getMarkerClass().prototype.getCommandTypeName = function() {
+    Commands.Marker.prototype.getCommandTypeName = function() {
         switch (this.getType()) {
             case this.MarkerType.SUBMISSION:
                 return 'SUBMISSION';
-            case CourseSketch.prutil.CommandType.FEEDBACK:
+            case Commands.CommandType.FEEDBACK:
                 return 'FEEDBACK';
-            case CourseSketch.prutil.CommandType.SAVE:
+            case Commands.CommandType.SAVE:
                 return 'SAVE';
-            case CourseSketch.prutil.CommandType.SPLIT:
+            case Commands.CommandType.SPLIT:
                 return 'SPLIT';
-            case CourseSketch.prutil.CommandType.CLEAR:
+            case Commands.CommandType.CLEAR:
                 return 'CLEAR';
         }
         return 'NO_NAME # is: ' + this.getCommandType();
@@ -227,7 +230,7 @@ validateFirstGlobalRun(document.currentScript, CourseSketch);
      *
      * @param {SrlSketch} sketch - The sketch object that is being affected by these changes.
      */
-    CourseSketch.prutil.getActionPackageShapeClass().prototype.redo = function(sketch) {
+    Commands.ActionPackageShape.prototype.redo = function(sketch) {
 
         if (this.newContainerId) {
             console.log('SHAPE ID: ', this.newContainerId.getIdChain());
@@ -255,7 +258,7 @@ validateFirstGlobalRun(document.currentScript, CourseSketch);
      *
      * @param {SrlSketch} sketch - The sketch object that is being affected by these changes.
      */
-    CourseSketch.prutil.getActionPackageShapeClass().prototype.undo = function(sketch) {
+    Commands.ActionPackageShape.prototype.undo = function(sketch) {
         var oldContainingObject = !(this.newContainerId) ? sketch : sketch.getSubObjectByIdChain(this.newContainerId.getIdChain());
         var newContainingObject = !(this.oldContainerId) ? sketch : sketch.getSubObjectByIdChain(this.oldContainerId.getIdChain());
 
@@ -280,4 +283,4 @@ validateFirstGlobalRun(document.currentScript, CourseSketch);
         }
     };
 
-})();
+});

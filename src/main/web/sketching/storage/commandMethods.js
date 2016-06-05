@@ -1,10 +1,13 @@
-validateFirstGlobalRun(document.currentScript, CourseSketch);
-
 /**
  * Adds a couple of really useful methods to the commands. Depends on
  * {@code /src/utilities/connection/protobufInclude.html}.
  */
-(function() {
+define('BaseCommands', ['generated_proto/commands', 'generated_proto/sketchUtil', 'protobufUtils/sketchProtoConverter'],
+function(ProtoCommands, ProtoSketchUtil, ProtoUtil) {
+    var Commands = ProtoCommands.protobuf.srl.commands;
+    var SketchUtil = ProtoSketchUtil.protobuf.srl.utils;
+    var CommandUtil = ProtoUtil.commands;
+
     /**
      * @class CommandException
      * @extends BaseException
@@ -16,16 +19,17 @@ validateFirstGlobalRun(document.currentScript, CourseSketch);
         this.setCause(cause);
         this.createStackTrace();
     }
+
     CommandException.prototype = new BaseException();
 
-    var ProtoSrlUpdate = Object.getPrototypeOf(CourseSketch.prutil.SrlUpdate());
-    var ProtoSrlCommand = Object.getPrototypeOf(CourseSketch.prutil.SrlCommand());
+    var ProtoSrlUpdate = Object.getPrototypeOf(Object.create(Commands.SrlUpdate));
+    var ProtoSrlCommand = Object.getPrototypeOf(Object.create(Commands.SrlCommand));
 
-    CourseSketch.prutil.getSrlCommandClass().prototype.sketchId = undefined;
-    CourseSketch.prutil.getSrlUpdateClass().prototype.sketchId = undefined;
+    Commands.SrlCommand.prototype.sketchId = undefined;
+    Commands.SrlUpdate.prototype.sketchId = undefined;
 
     // these functions should not be created more than once in the entirety of the program.
-    if (!isUndefined(ProtoSrlCommand.getLocalSketchSurface)) {
+    if (!ProtoUtil.isUndefined(ProtoSrlCommand.getLocalSketchSurface)) {
         return;
     }
 
@@ -39,11 +43,11 @@ validateFirstGlobalRun(document.currentScript, CourseSketch);
      * @function redo
      * @instance
      */
-    CourseSketch.prutil.getSrlUpdateClass().prototype.redo = function() {
+    Commands.SrlUpdate.prototype.redo = function () {
         var redraw = false;
         var commandList = this.getCommands();
         var commandLength = commandList.length;
-        var getLocalSketchSurface = function() {
+        var getLocalSketchSurface = function () {
             return this.sketchManager.getCurrentSketch();
         }.bind(this);
         for (var i = 0; i < commandLength; i++) {
@@ -69,7 +73,7 @@ validateFirstGlobalRun(document.currentScript, CourseSketch);
      * @function undo
      * @instance
      */
-    CourseSketch.prutil.getSrlUpdateClass().prototype.undo = function() {
+    Commands.SrlUpdate.prototype.undo = function () {
         var commandList = this.getCommands();
         var commandLength = commandList.length;
         var redraw = false;
@@ -88,7 +92,7 @@ validateFirstGlobalRun(document.currentScript, CourseSketch);
      * @instance
      * @returns {String} The human readable name of the given command type.
      */
-    ProtoSrlCommand.getCommandTypeName = function() {
+    ProtoSrlCommand.getCommandTypeName = function () {
         var commandType = this.getCommandType();
         for (var type in CourseSketch.prutil.CommandType) {
             if (CourseSketch.prutil.CommandType[type] === commandType) {
@@ -108,9 +112,9 @@ validateFirstGlobalRun(document.currentScript, CourseSketch);
      * @instance
      * @returns {Boolean} true if redoing the command requires a redraw of the screen.
      */
-    ProtoSrlCommand.redo = function() {
+    ProtoSrlCommand.redo = function () {
         var redoFunc = this['redo' + this.getCommandType()];
-        if (isUndefined(redoFunc)) {
+        if (ProtoUtil.isUndefined(redoFunc)) {
             throw (this.getCommandTypeName() + ' is not defined as a redo function');
         }
         return redoFunc.bind(this)();
@@ -124,9 +128,9 @@ validateFirstGlobalRun(document.currentScript, CourseSketch);
      * @instance
      * @returns {Boolean} true if undoing the command requires a redraw of the screen.
      */
-    ProtoSrlCommand.undo = function() {
+    ProtoSrlCommand.undo = function () {
         var undoFunc = this['undo' + this.getCommandType()];
-        if (isUndefined(undoFunc)) {
+        if (ProtoUtil.isUndefined(undoFunc)) {
             throw (this.getCommandTypeName() + ' is not defined as an undo function');
         }
         return undoFunc.bind(this)();
@@ -141,11 +145,11 @@ validateFirstGlobalRun(document.currentScript, CourseSketch);
      * @param {CommandType} commandType - The type of command that is being added.
      * @param {Function} func - The function that is called when redo method is called.
      */
-    CourseSketch.prutil.getSrlCommandClass().addRedoMethod = function(commandType, func) {
-        if (isUndefined(commandType)) {
+    Commands.SrlCommand.addRedoMethod = function (commandType, func) {
+        if (ProtoUtil.isUndefined(commandType)) {
             throw new CommandException('The input commandType can not be undefined');
         }
-        if (!isUndefined(ProtoSrlCommand['redo' + commandType])) {
+        if (!ProtoUtil.isUndefined(ProtoSrlCommand['redo' + commandType])) {
             throw new CommandException('Method is already defined');
         }
         ProtoSrlCommand['redo' + commandType] = func;
@@ -159,11 +163,11 @@ validateFirstGlobalRun(document.currentScript, CourseSketch);
      * @function removeRedoMethod
      * @param {CommandType} commandType - The type of command that is being removed.
      */
-    CourseSketch.prutil.getSrlCommandClass().removeRedoMethod = function(commandType) {
-        if (isUndefined(commandType)) {
+    Commands.SrlCommand.removeRedoMethod = function (commandType) {
+        if (ProtoUtil.isUndefined(commandType)) {
             throw new CommandException('The input commandType can not be undefined');
         }
-        if (isUndefined(ProtoSrlCommand['redo' + commandType])) {
+        if (ProtoUtil.isUndefined(ProtoSrlCommand['redo' + commandType])) {
             throw new CommandException('Method does not exist');
         }
         ProtoSrlCommand['redo' + commandType] = undefined;
@@ -178,11 +182,11 @@ validateFirstGlobalRun(document.currentScript, CourseSketch);
      * @param {CommandType} commandType - The type of command that is being added.
      * @param {Function} func - The function that is called when undo method is called.
      */
-    CourseSketch.prutil.getSrlCommandClass().addUndoMethod = function(commandType, func) {
-        if (isUndefined(commandType)) {
+    Commands.SrlCommand.addUndoMethod = function (commandType, func) {
+        if (ProtoUtil.isUndefined(commandType)) {
             throw new CommandException('The input commandType can not be undefined');
         }
-        if (!isUndefined(ProtoSrlCommand['undo' + commandType])) {
+        if (!ProtoUtil.isUndefined(ProtoSrlCommand['undo' + commandType])) {
             throw new CommandException('Method is already defined');
         }
         ProtoSrlCommand['undo' + commandType] = func;
@@ -196,13 +200,13 @@ validateFirstGlobalRun(document.currentScript, CourseSketch);
      * @function removeUndoMethod
      * @param {CommandType} commandType - The type of command that is being removed.
      */
-    CourseSketch.prutil.getSrlCommandClass().removeUndoMethod = function(commandType) {
-        if (isUndefined(commandType)) {
+    Commands.SrlCommand.removeUndoMethod = function (commandType) {
+        if (ProtoUtil.isUndefined(commandType)) {
             throw new CommandException('The input commandType can not be undefined');
         }
-        if (isUndefined(ProtoSrlCommand['undo' + commandType])) {
+        if (ProtoUtil.isUndefined(ProtoSrlCommand['undo' + commandType])) {
             throw new CommandException('Method does not exist');
         }
         ProtoSrlCommand['undo' + commandType] = undefined;
     };
-})();
+});

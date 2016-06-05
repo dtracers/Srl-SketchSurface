@@ -59,7 +59,7 @@
             sketch.initializeSketch();
 
             var srlSketch = sketch.getSrlSketch();
-            assert.ok(srlSketch instanceof SRL_Sketch);
+            assert.ok(srlSketch instanceof SrlSketch);
         });
 
         QUnit.test("binding update list throws exception if it already exist", function(assert) {
@@ -191,7 +191,7 @@
             assert.equal(updateList.getListLength(), 2, "the update list now has updates in it");
             assert.equal(sketchStorage.getList().length, 1, "the sketch now has a single item in it");
             var stroke = sketchStorage.getList()[0];
-            assert.ok(stroke instanceof SRL_Stroke, "the sketch contains a single stroke");
+            assert.ok(stroke instanceof SrlStroke, "the sketch contains a single stroke");
             console.log(stroke);
         });
 

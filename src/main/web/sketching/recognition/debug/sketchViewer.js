@@ -12,7 +12,7 @@ function createView(sketchObject, level) {
     html += ' <br>Id:<br>' + (sketchObject.getId().substring(0,12));
     html+= '</p>';
 
-    if (objectType == "SRL_Shape") {
+    if (objectType == "SrlShape") {
         var list = sketchObject.getInterpretations();
         if (list.length > 0) {
             console.log('open interpretations');
@@ -33,7 +33,7 @@ function createView(sketchObject, level) {
             //size
             tempWidth = values[1];
         }
-    } else if (objectType == "SRL_Stroke") {
+    } else if (objectType == "SrlStroke") {
         html += '# of points: ' + sketchObject.getNumPoints();
     }
 

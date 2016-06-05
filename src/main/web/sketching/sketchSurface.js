@@ -59,7 +59,7 @@ function SketchSurface() {
     };
 
     /**
-     * @returns {SRL_Sketch} The sketch object used by this sketch surface.
+     * @returns {SrlSketch} The sketch object used by this sketch surface.
      */
     this.getCurrentSketch = function() {
         return this.sketchManager.getCurrentSketch();
@@ -95,7 +95,7 @@ function SketchSurface() {
      * Draws the stroke then creates an update that is added to the update
      * manager, given a stroke.
      *
-     * @param {SRL_Stroke} stroke - A stroke that is added to the sketch.
+     * @param {SrlStroke} stroke - A stroke that is added to the sketch.
      */
     function addStrokeCallback(stroke) {
 
@@ -145,7 +145,7 @@ function SketchSurface() {
         this.sketchManager = new SketchSurfaceManager(this);
         this.updateManager = undefined;
         bindUpdateListCalled = false;
-        this.sketchManager.setParentSketch(new SRL_Sketch());
+        this.sketchManager.setParentSketch(new SrlSketch());
         this.eventListenerElement = undefined;
     };
 
@@ -192,7 +192,7 @@ function SketchSurface() {
     this.getSrlUpdateListProto = function() {
         var updateProto = CourseSketch.prutil.SrlUpdateList();
         updateProto.list = this.updateManager.getUpdateList();
-        return CourseSketch.prutil.decodeProtobuf(updateProto.toArrayBuffer(), CourseSketch.prutil.getSrlUpdateListClass());
+        return ProtoUtil.decodeProtobuf(updateProto.toArrayBuffer(), CourseSketch.prutil.getSrlUpdateListClass());
     };
 
     /**
@@ -212,7 +212,7 @@ function SketchSurface() {
         if (!isUndefined(update)) {
             var firstCommand = update.commands[0];
             if (firstCommand.commandType === CourseSketch.prutil.CommandType.CREATE_SKETCH) {
-                var sketch = CourseSketch.prutil.decodeProtobuf(firstCommand.commandData,
+                var sketch = ProtoUtil.decodeProtobuf(firstCommand.commandData,
                     CourseSketch.prutil.getActionCreateSketchClass());
                 this.id = sketch.sketchId.idChain[0];
                 this.sketchManager.setParentSketchId(this.id);

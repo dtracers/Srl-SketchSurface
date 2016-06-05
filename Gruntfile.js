@@ -18,6 +18,7 @@ module.exports = function(grunt) {
     grunt.loadNpmTasks('grunt-webdriver');
     grunt.loadNpmTasks('grunt-selenium-server');
     grunt.loadNpmTasks('grunt-mkdir');
+    grunt.loadNpmTasks('grunt-exec');
     grunt.loadTasks('config/gruntTasks/');
 
     var gruntOptions = {
@@ -97,6 +98,32 @@ module.exports = function(grunt) {
                 }
             }
         },
+
+        /**
+         * BUILDERS
+         */
+        exec: {
+            build_proto: {
+                cmd: function() {
+                    var protoPath = 'src/main/resources/protobuf';
+                    var inputFiles = [ protoPath + '/**/*.proto' ];
+                    var protoFiles = grunt.file.expand(inputFiles);
+                    var jsFiles = grunt.file.expandMapping(protoFiles, 'bower_components/generated_proto', { flatten: true, ext: '.js' });
+                    var command = '';
+                    for (var i = 0; i < protoFiles.length; i++) {
+                        grunt.log.write('cimpiling protofile ' + protoFiles[i]);
+                        grunt.log.write('');
+                        var jsFile = jsFiles[i].dest;
+                        command+= '"./node_modules/.bin/pbjs" ' + protoFiles[i] + ' --source=proto' +
+                            ' --dependency="protobufjs"' +
+                            ' --target=amd --path=src/main/resources/protobuf > ' + jsFile + ' & ';
+                    }
+                    console.log(command);
+                    return command + 'echo "completed compile"';
+                }
+            }
+        },
+
         /**
          * UNIT TESTS AND SERVER
          */
@@ -444,7 +471,8 @@ module.exports = function(grunt) {
     grunt.registerTask('install', function() {
         printTaskGroup();
         grunt.task.run([
-            'copy:proto'
+            'copy:proto',
+            'exec:build_proto'
         ]);
     });
 
