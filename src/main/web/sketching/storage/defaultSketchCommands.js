@@ -6,8 +6,9 @@
  * @overview This file holds the redo and undo methods for the default sketch command.
  ******************************************************************************/
 define('DefaultSketchCommands', ['BaseCommands', 'generated_proto/commands', 'generated_proto/sketchUtil', 'protobufUtils/sketchProtoConverter',
+    'protobufUtils/classCreator',
     'sketchLibrary/SrlStroke', 'sketchLibrary/SrlShape'],
-function(BaseCommands, ProtoCommands, ProtoSketchUtil, ProtoUtil, SrlStroke, SrlShape) {
+function(BaseCommands, ProtoCommands, ProtoSketchUtil, ProtoUtil, ClassUtils, SrlStroke, SrlShape) {
     var Commands = ProtoCommands.protobuf.srl.commands;
     var SketchUtil = ProtoSketchUtil.protobuf.srl.utils;
     var CommandUtil = ProtoUtil.commands;
@@ -82,7 +83,7 @@ function(BaseCommands, ProtoCommands, ProtoSketchUtil, ProtoUtil, SrlStroke, Srl
      */
     Commands.SrlCommand.addRedoMethod(Commands.CommandType.ADD_STROKE, function() {
         if (!this.decodedData) {
-            var stroke = ProtoUtil.decodeProtobuf(this.commandData, SrlStroke);
+            var stroke = ProtoUtil.decode(this.commandData, SrlStroke);
             this.decodedData = SrlStroke.createFromProtobuf(stroke);
         }
         this.getLocalSketchSurface().addObject(this.decodedData);
@@ -97,7 +98,7 @@ function(BaseCommands, ProtoCommands, ProtoSketchUtil, ProtoUtil, SrlStroke, Srl
      */
     Commands.SrlCommand.addUndoMethod(Commands.CommandType.ADD_STROKE, function() {
         if (!this.decodedData) {
-            var stroke = ProtoUtil.decodeProtobuf(this.commandData, SrlStroke);
+            var stroke = ProtoUtil.decode(this.commandData, SrlStroke);
             this.decodedData = SrlStroke.createFromProtobuf(stroke);
         }
         this.getLocalSketchSurface().removeSubObjectById(this.decodedData.getId());
@@ -112,7 +113,7 @@ function(BaseCommands, ProtoCommands, ProtoSketchUtil, ProtoUtil, SrlStroke, Srl
      */
     Commands.SrlCommand.addRedoMethod(Commands.CommandType.ADD_SHAPE, function() {
         if (!this.decodedData) {
-            var shape = ProtoUtil.decodeProtobuf(this.commandData, SrlShape);
+            var shape = ProtoUtil.decode(this.commandData, SrlShape);
             this.decodedData = SrlShape.createFromProtobuf(shape);
         }
         this.getLocalSketchSurface().addObject(this.decodedData);
@@ -127,7 +128,7 @@ function(BaseCommands, ProtoCommands, ProtoSketchUtil, ProtoUtil, SrlStroke, Srl
      */
     Commands.SrlCommand.addUndoMethod(Commands.CommandType.ADD_SHAPE, function() {
         if (!this.decodedData) {
-            var shape = ProtoUtil.decodeProtobuf(this.commandData, SrlShape);
+            var shape = ProtoUtil.decode(this.commandData, SrlShape);
             this.decodedData = SrlShape.createFromProtobuf(shape);
         }
         this.getLocalSketchSurface().removeSubObjectById(this.decodedData.getId());
@@ -144,7 +145,7 @@ function(BaseCommands, ProtoCommands, ProtoSketchUtil, ProtoUtil, SrlStroke, Srl
     Commands.SrlCommand.addRedoMethod(Commands.CommandType.REMOVE_OBJECT, function() {
         if (!this.decodedData || !isArray(this.decodedData)) {
             this.decodedData = [];
-            var idChain = ProtoUtil.decodeProtobuf(this.commandData, ProtoSketchUtil.IdChain);
+            var idChain = ProtoUtil.decode(this.commandData, ProtoSketchUtil.IdChain);
             this.decodedData[0] = idChain;
         }
         this.decodedData[1] = this.getLocalSketchSurface().removeSubObjectByIdChain(this.decodedData[0].idChain);
@@ -161,7 +162,7 @@ function(BaseCommands, ProtoCommands, ProtoSketchUtil, ProtoUtil, SrlStroke, Srl
     Commands.SrlCommand.addUndoMethod(Commands.CommandType.REMOVE_OBJECT, function() {
         if (!this.decodedData || !isArray(this.decodedData)) {
             this.decodedData = [];
-            var idChain = ProtoUtil.decodeProtobuf(this.commandData, ProtoSketchUtil.IdChain);
+            var idChain = ProtoUtil.decode(this.commandData, ProtoSketchUtil.IdChain);
             this.decodedData[0] = idChain;
         }
         this.getLocalSketchSurface().addObject(this.decodedData[1]);
@@ -177,8 +178,8 @@ function(BaseCommands, ProtoCommands, ProtoSketchUtil, ProtoUtil, SrlStroke, Srl
      *          associated with.
      */
     Commands.SrlCommand.addRedoMethod(Commands.CommandType.PACKAGE_SHAPE, function() {
-        if (isUndefined(this.decodedData) || (!this.decodedData)) {
-            this.decodedData = ProtoUtil.decodeProtobuf(this.commandData, Commands.ActionPackageShape);
+        if (ClassUtils.isUndefined(this.decodedData) || (!this.decodedData)) {
+            this.decodedData = ProtoUtil.decode(this.commandData, Commands.ActionPackageShape);
         }
         this.decodedData.redo(this.getLocalSketchSurface());
         return false;
@@ -191,8 +192,8 @@ function(BaseCommands, ProtoCommands, ProtoSketchUtil, ProtoUtil, SrlStroke, Srl
      *          redrawn.
      */
     Commands.SrlCommand.addUndoMethod(Commands.CommandType.PACKAGE_SHAPE, function() {
-        if (isUndefined(this.decodedData) || (!this.decodedData)) {
-            this.decodedData = ProtoUtil.decodeProtobuf(this.commandData, Commands.ActionPackageShape);
+        if (ClassUtils.isUndefined(this.decodedData) || (!this.decodedData)) {
+            this.decodedData = ProtoUtil.decode(this.commandData, Commands.ActionPackageShape);
         }
         this.decodedData.undo(this.getLocalSketchSurface());
         return false;

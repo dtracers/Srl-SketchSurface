@@ -31,14 +31,14 @@
         test("sketch surface creation", function(assert) {
             var manager = new SketchSurfaceHandler();
             var sketch = manager.createSketch();
-            assert.ok(!isUndefined(sketch));
+            assert.ok(!ClassUtils.isUndefined(sketch));
         });
 
         test("sketch surface creation with ID", function(assert) {
             var manager = new SketchSurfaceHandler();
             var id = "5"; // so unique much wow.
             var sketch = manager.createSketch(id);
-            assert.ok(!isUndefined(sketch));
+            assert.ok(!ClassUtils.isUndefined(sketch));
 
             var sketch1 = manager.getSketch(id);
             // sketch == sketch1 (shallow compare)

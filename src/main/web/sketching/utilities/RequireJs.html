@@ -1,0 +1,28 @@
+<html>
+<head>
+    <!-- Utilities -->
+    <script src="/bower_components/requirejs/require.js"></script>
+    <script>
+        require.config({
+            baseUrl: "/bower_components",
+            paths: {
+                "stacktrace-js": "stacktrace-js/dist/stacktrace",
+                "long": "long/dist/long",
+                "bytebuffer": "bytebuffer/dist/bytebuffer",
+                "protobufjs": "protobufjs/dist/protobuf",
+                'paperjs' : "paper/dist/paper-core"
+            },
+            shim: {
+                'paperjs' : {
+                    init: function () {
+                        return {
+                            paper: paper,
+                            Key: key
+                        }
+                    }
+                }
+            }
+        });
+    </script>
+</head>
+</html>

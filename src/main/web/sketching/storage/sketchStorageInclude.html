@@ -1,9 +1,13 @@
 <html>
 <head>
-    <link rel="import" href="srl/srlLibraryInclude.html">
+    <link rel="import" href="/src/sketching/srl/srlLibraryInclude.html">
     <script>
-        require('UpdateManager', function (updateManager) {
-           console.log(updateManager.UpdateManager);
+        require.config({
+            paths: {
+                UpdateManager: '/src/sketching/storage/UpdateManager',
+                DefaultSketchCommands: '/src/sketching/storage/DefaultSketchCommands',
+                BaseCommands: '/src/sketching/storage/BaseCommands'
+            }
         });
     </script>
 </head>

@@ -2,10 +2,11 @@
  * Adds a couple of really useful methods to the commands. Depends on
  * {@code /src/utilities/connection/protobufInclude.html}.
  */
-define('BaseCommands', ['generated_proto/commands', 'generated_proto/sketchUtil', 'protobufUtils/sketchProtoConverter'],
-function(ProtoCommands, ProtoSketchUtil, ProtoUtil) {
+define('BaseCommands', ['generated_proto/commands', 'generated_proto/sketchUtil', 'protobufUtils/sketchProtoConverter',
+    'protobufUtils/classCreator',
+    'sketchLibrary/SketchLibraryException'],
+function(ProtoCommands, ProtoSketchUtil, ProtoUtil, ClassUtils, SketchException) {
     var Commands = ProtoCommands.protobuf.srl.commands;
-    var SketchUtil = ProtoSketchUtil.protobuf.srl.utils;
     var CommandUtil = ProtoUtil.commands;
 
     /**
@@ -14,13 +15,9 @@ function(ProtoCommands, ProtoSketchUtil, ProtoUtil) {
      */
     function CommandException(message, cause) {
         this.name = 'CommandException';
-        this.setMessage(message);
-        this.message = '';
-        this.setCause(cause);
-        this.createStackTrace();
+        this.superConstructor(message, cause);
     }
-
-    CommandException.prototype = new BaseException();
+    ClassUtils.Inherits(CommandException, SketchException);
 
     var ProtoSrlUpdate = Object.getPrototypeOf(Object.create(Commands.SrlUpdate));
     var ProtoSrlCommand = Object.getPrototypeOf(Object.create(Commands.SrlCommand));
@@ -29,7 +26,7 @@ function(ProtoCommands, ProtoSketchUtil, ProtoUtil) {
     Commands.SrlUpdate.prototype.sketchId = undefined;
 
     // these functions should not be created more than once in the entirety of the program.
-    if (!ProtoUtil.isUndefined(ProtoSrlCommand.getLocalSketchSurface)) {
+    if (!ClassUtils.isUndefined(ProtoSrlCommand.getLocalSketchSurface)) {
         return;
     }
 
@@ -94,8 +91,8 @@ function(ProtoCommands, ProtoSketchUtil, ProtoUtil) {
      */
     ProtoSrlCommand.getCommandTypeName = function () {
         var commandType = this.getCommandType();
-        for (var type in CourseSketch.prutil.CommandType) {
-            if (CourseSketch.prutil.CommandType[type] === commandType) {
+        for (var type in Commands.CommandType) {
+            if (Commands.CommandType[type] === commandType) {
                 return '' + type;
             }
         }
@@ -114,7 +111,7 @@ function(ProtoCommands, ProtoSketchUtil, ProtoUtil) {
      */
     ProtoSrlCommand.redo = function () {
         var redoFunc = this['redo' + this.getCommandType()];
-        if (ProtoUtil.isUndefined(redoFunc)) {
+        if (ClassUtils.isUndefined(redoFunc)) {
             throw (this.getCommandTypeName() + ' is not defined as a redo function');
         }
         return redoFunc.bind(this)();
@@ -130,7 +127,7 @@ function(ProtoCommands, ProtoSketchUtil, ProtoUtil) {
      */
     ProtoSrlCommand.undo = function () {
         var undoFunc = this['undo' + this.getCommandType()];
-        if (ProtoUtil.isUndefined(undoFunc)) {
+        if (ClassUtils.isUndefined(undoFunc)) {
             throw (this.getCommandTypeName() + ' is not defined as an undo function');
         }
         return undoFunc.bind(this)();
@@ -146,10 +143,10 @@ function(ProtoCommands, ProtoSketchUtil, ProtoUtil) {
      * @param {Function} func - The function that is called when redo method is called.
      */
     Commands.SrlCommand.addRedoMethod = function (commandType, func) {
-        if (ProtoUtil.isUndefined(commandType)) {
+        if (ClassUtils.isUndefined(commandType)) {
             throw new CommandException('The input commandType can not be undefined');
         }
-        if (!ProtoUtil.isUndefined(ProtoSrlCommand['redo' + commandType])) {
+        if (!ClassUtils.isUndefined(ProtoSrlCommand['redo' + commandType])) {
             throw new CommandException('Method is already defined');
         }
         ProtoSrlCommand['redo' + commandType] = func;
@@ -164,10 +161,10 @@ function(ProtoCommands, ProtoSketchUtil, ProtoUtil) {
      * @param {CommandType} commandType - The type of command that is being removed.
      */
     Commands.SrlCommand.removeRedoMethod = function (commandType) {
-        if (ProtoUtil.isUndefined(commandType)) {
+        if (ClassUtils.isUndefined(commandType)) {
             throw new CommandException('The input commandType can not be undefined');
         }
-        if (ProtoUtil.isUndefined(ProtoSrlCommand['redo' + commandType])) {
+        if (ClassUtils.isUndefined(ProtoSrlCommand['redo' + commandType])) {
             throw new CommandException('Method does not exist');
         }
         ProtoSrlCommand['redo' + commandType] = undefined;
@@ -183,10 +180,10 @@ function(ProtoCommands, ProtoSketchUtil, ProtoUtil) {
      * @param {Function} func - The function that is called when undo method is called.
      */
     Commands.SrlCommand.addUndoMethod = function (commandType, func) {
-        if (ProtoUtil.isUndefined(commandType)) {
+        if (ClassUtils.isUndefined(commandType)) {
             throw new CommandException('The input commandType can not be undefined');
         }
-        if (!ProtoUtil.isUndefined(ProtoSrlCommand['undo' + commandType])) {
+        if (!ClassUtils.isUndefined(ProtoSrlCommand['undo' + commandType])) {
             throw new CommandException('Method is already defined');
         }
         ProtoSrlCommand['undo' + commandType] = func;
@@ -201,12 +198,14 @@ function(ProtoCommands, ProtoSketchUtil, ProtoUtil) {
      * @param {CommandType} commandType - The type of command that is being removed.
      */
     Commands.SrlCommand.removeUndoMethod = function (commandType) {
-        if (ProtoUtil.isUndefined(commandType)) {
+        if (ClassUtils.isUndefined(commandType)) {
             throw new CommandException('The input commandType can not be undefined');
         }
-        if (ProtoUtil.isUndefined(ProtoSrlCommand['undo' + commandType])) {
+        if (ClassUtils.isUndefined(ProtoSrlCommand['undo' + commandType])) {
             throw new CommandException('Method does not exist');
         }
         ProtoSrlCommand['undo' + commandType] = undefined;
     };
+
+    return CommandException;
 });

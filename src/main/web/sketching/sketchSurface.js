@@ -39,12 +39,12 @@ function SketchSurface() {
      * list knows what Id to assign to subsequent events.
      */
     this.createSketchUpdate = function() {
-        if (isUndefined(this.id)) {
-            this.id = generateUUID();
+        if (ClassUtils.isUndefined(this.id)) {
+            this.id = ClassUtils.generateUuid();
         }
-        if (!isUndefined(this.updateManager) && this.updateManager.getListLength() <= 0) {
+        if (!ClassUtils.isUndefined(this.updateManager) && this.updateManager.getListLength() <= 0) {
             var command = CourseSketch.prutil.createNewSketch(this.id);
-            var update = CourseSketch.prutil.createUpdateFromCommands([ command ]);
+            var update = CommandUtil.createUpdateFromCommands([ command ]);
             this.updateManager.addUpdate(update);
         }
     };
@@ -77,7 +77,7 @@ function SketchSurface() {
             this.updateManager = undefined;
         }
 
-        if (isUndefined(this.updateManager)) {
+        if (ClassUtils.isUndefined(this.updateManager)) {
             if (UpdateManagerClass instanceof UpdateManager) {
                 this.updateManager = UpdateManagerClass;
             } else {
@@ -99,11 +99,11 @@ function SketchSurface() {
      */
     function addStrokeCallback(stroke) {
 
-        var command = CourseSketch.prutil.createBaseCommand(CourseSketch.prutil.CommandType.ADD_STROKE, true);
+        var command = CommandUtil.createBaseCommand(Commands.CommandType.ADD_STROKE, true);
         var protoStroke = stroke.sendToProtobuf(parent);
         command.commandData = protoStroke.toArrayBuffer();
         command.decodedData = stroke;
-        var update = CourseSketch.prutil.createUpdateFromCommands([ command ]);
+        var update = CommandUtil.createUpdateFromCommands([ command ]);
         this.updateManager.addUpdate(update);
     }
 
@@ -192,7 +192,7 @@ function SketchSurface() {
     this.getSrlUpdateListProto = function() {
         var updateProto = CourseSketch.prutil.SrlUpdateList();
         updateProto.list = this.updateManager.getUpdateList();
-        return ProtoUtil.decodeProtobuf(updateProto.toArrayBuffer(), CourseSketch.prutil.getSrlUpdateListClass());
+        return ProtoUtil.decode(updateProto.toArrayBuffer(), CourseSketch.prutil.getSrlUpdateListClass());
     };
 
     /**
@@ -209,10 +209,10 @@ function SketchSurface() {
      */
     this.extractIdFromList = function(updateList) {
         var update = updateList[0];
-        if (!isUndefined(update)) {
+        if (!ClassUtils.isUndefined(update)) {
             var firstCommand = update.commands[0];
-            if (firstCommand.commandType === CourseSketch.prutil.CommandType.CREATE_SKETCH) {
-                var sketch = ProtoUtil.decodeProtobuf(firstCommand.commandData,
+            if (firstCommand.commandType === Commands.CommandType.CREATE_SKETCH) {
+                var sketch = ProtoUtil.decode(firstCommand.commandData,
                     CourseSketch.prutil.getActionCreateSketchClass());
                 this.id = sketch.sketchId.idChain[0];
                 this.sketchManager.setParentSketchId(this.id);
@@ -243,7 +243,7 @@ function SketchSurface() {
      * This currently is only allowed on read-only canvases.
      */
     this.fillCanvas = function() {
-        if (isUndefined(this.dataset) || isUndefined(this.dataset.readonly)) {
+        if (ClassUtils.isUndefined(this.dataset) || isUndefined(this.dataset.readonly)) {
             throw new BaseException('This can only be performed on read only sketch surfaces');
         }
     };
@@ -276,23 +276,23 @@ SketchSurface.prototype.initializeSurface = function(InputListenerClass, UpdateM
     this.initializeSketch();
     this.initializeGraphics();
 
-    if (isUndefined(this.dataset) || isUndefined(this.dataset.readonly)) {
+    if (ClassUtils.isUndefined(this.dataset) || isUndefined(this.dataset.readonly)) {
         this.initializeInput(InputListenerClass);
     }
 
-    if (isUndefined(this.dataset) || isUndefined(this.dataset.customid) || isUndefined(this.id) || this.id === null || this.id === '') {
-        this.id = generateUUID();
+    if (ClassUtils.isUndefined(this.dataset) || isUndefined(this.dataset.customid) || isUndefined(this.id) || this.id === null || this.id === '') {
+        this.id = ClassUtils.generateUuid();
     }
 
-    if (isUndefined(this.dataset) || isUndefined(this.dataset.existingManager)) {
+    if (ClassUtils.isUndefined(this.dataset) || isUndefined(this.dataset.existingManager)) {
         this.bindToUpdateManager(UpdateManagerClass);
     }
 
-    if (isUndefined(this.dataset) || (isUndefined(this.dataset.existinglist) && isUndefined(this.dataset.customid))) {
+    if (ClassUtils.isUndefined(this.dataset) || (ClassUtils.isUndefined(this.dataset.existinglist) && isUndefined(this.dataset.customid))) {
         this.createSketchUpdate();
     }
 
-    if (!isUndefined(this.dataset) && !(isUndefined(this.dataset.autoresize))) {
+    if (!ClassUtils.isUndefined(this.dataset) && !(ClassUtils.isUndefined(this.dataset.autoresize))) {
         this.makeResizeable();
     }
     window.addEventListener('load', function() {

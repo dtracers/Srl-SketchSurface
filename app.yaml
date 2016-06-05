@@ -1,5 +1,5 @@
 #starts off with dev so that we can differntiate in app engine.  As app engine cuts words off.
-application: dev-coursesketch
+application: dev-srl-sketchsruface
 version: 1
 runtime: python27
 api_version: 1
@@ -13,21 +13,8 @@ handlers:
 - url: /
   script: testFiles.app
 
-- url: /index\.html
-  static_files: index.html
-  upload: index\.html
-
 - url: /testList
   script: testFiles.app
-
-- url: /html
-  static_dir: src/html
-
-- url: /js
-  static_dir: src/js
-
-- url: /css
-  static_dir: src/main/resources/css
 
 - url: /src/test/web
   static_dir: src/test/web
@@ -43,21 +30,8 @@ handlers:
 - url: /images
   static_dir: src/main/resources/images
 
-- url: /other
-  static_dir: src/main/resources/other
-
 - url: /bower_components
   static_dir: bower_components
-
-# Math jax short cuts
-- url: /extensions
-  static_dir: bower_components/MathJax/extensions
-
-- url: /jax
-  static_dir: bower_components/MathJax/jax
-
-- url: /fonts
-  static_dir: bower_components/MathJax/fonts
 
 - url: /*
   script: testFiles.app

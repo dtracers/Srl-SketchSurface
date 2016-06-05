@@ -17,9 +17,11 @@
   },
   "devDependencies": {
     "blanket": "1.1.7",
-    "qunit": "1.23.0",
+    "qunit": "2.0.0-rc1",
     "qunit-once": "0.1.1",
-    "sinon": "http://sinonjs.org/releases/sinon-1.17.3.js"
+    "sinon": "http://sinonjs.org/releases/sinon-1.17.3.js",
+    "mocha": "2.5.3",
+    "chai": "*"
   },
   "private": true
 }

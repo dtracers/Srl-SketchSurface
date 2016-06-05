@@ -21,9 +21,9 @@
         QUnit.module("types");
         test("names are correctly called with the type", function(assert) {
             var type = "";
-            for (type in CourseSketch.prutil.CommandType) {
+            for (type in Commands.CommandType) {
                 var command = CourseSketch.prutil.SrlCommand();
-                command.setCommandType(CourseSketch.prutil.CommandType[type]);
+                command.setCommandType(Commands.CommandType[type]);
                 assert.equal(command.getCommandTypeName(), type);
             }
         });
@@ -226,12 +226,12 @@
             specialFunction : function() {
             }, // does nothing
             setup : function() {
-                Commands.SrlCommand().addRedoMethod(CourseSketch.prutil.CommandType.MARKER, this.specialFunction);
-                Commands.SrlCommand().addUndoMethod(CourseSketch.prutil.CommandType.MARKER, this.specialFunction);
+                Commands.SrlCommand().addRedoMethod(Commands.CommandType.MARKER, this.specialFunction);
+                Commands.SrlCommand().addUndoMethod(Commands.CommandType.MARKER, this.specialFunction);
             },
             teardown : function() {
-                Commands.SrlCommand().removeRedoMethod(CourseSketch.prutil.CommandType.MARKER);
-                Commands.SrlCommand().removeUndoMethod(CourseSketch.prutil.CommandType.MARKER);
+                Commands.SrlCommand().removeRedoMethod(Commands.CommandType.MARKER);
+                Commands.SrlCommand().removeUndoMethod(Commands.CommandType.MARKER);
                 // clean up after each test
             }
         });
@@ -239,7 +239,7 @@
         test("addRedoMethod Throws error if method already exists", function(assert) {
             var spy = this.spy(Commands.SrlCommand().addRedoMethod);
             try {
-                spy(CourseSketch.prutil.CommandType.MARKER, function() {
+                spy(Commands.CommandType.MARKER, function() {
                 });
             } catch (exception) {
 
@@ -259,7 +259,7 @@
         test("addUndoMethod Throws error if method already exists", function(assert) {
             var spy = this.spy(Commands.SrlCommand().addUndoMethod);
             try {
-                spy(CourseSketch.prutil.CommandType.MARKER, function() {
+                spy(Commands.CommandType.MARKER, function() {
                 });
             } catch (exception) {
 
@@ -318,28 +318,28 @@
         QUnit.module("SrlCommand Redo/Undo", {
             teardown : function() {
                 try {
-                    Commands.SrlCommand().removeRedoMethod(CourseSketch.prutil.CommandType.MARKER);
+                    Commands.SrlCommand().removeRedoMethod(Commands.CommandType.MARKER);
                 } catch (exception) {
                 }
                 try {
-                    Commands.SrlCommand().removeUndoMethod(CourseSketch.prutil.CommandType.MARKER);
+                    Commands.SrlCommand().removeUndoMethod(Commands.CommandType.MARKER);
                 } catch (exception) {
                 }
                 // clean up after each test
             }
         });
         test("tests that calling redo on a command works", function(assert) {
-            var command = CourseSketch.prutil.createBaseCommand(CourseSketch.prutil.CommandType.MARKER, false);
+            var command = CommandUtil.createBaseCommand(Commands.CommandType.MARKER, false);
             var spy = this.spy();
-            Commands.SrlCommand().addRedoMethod(CourseSketch.prutil.CommandType.MARKER, spy);
+            Commands.SrlCommand().addRedoMethod(Commands.CommandType.MARKER, spy);
             command.redo();
             ok(spy.calledOnce);
         });
 
         test("tests that calling undo on a command works", function(assert) {
-            var command = CourseSketch.prutil.createBaseCommand(CourseSketch.prutil.CommandType.MARKER, false);
+            var command = CommandUtil.createBaseCommand(Commands.CommandType.MARKER, false);
             var spy = this.spy();
-            Commands.SrlCommand().addUndoMethod(CourseSketch.prutil.CommandType.MARKER, spy);
+            Commands.SrlCommand().addUndoMethod(Commands.CommandType.MARKER, spy);
             command.undo();
             ok(spy.calledOnce);
         });

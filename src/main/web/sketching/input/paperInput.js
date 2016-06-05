@@ -117,7 +117,7 @@ function (paperjs, ProtoCommands, SrlStroke, SrlPoint) {
                 } else {
                     currentPoint = createPointFromEvent(event);
                     currentStroke = new SrlStroke(currentPoint);
-                    currentStroke.setId(generateUUID());
+                    currentStroke.setId(ClassUtils.generateUuid());
                     graphics.createNewPath(event.point);
                     pastPoint = currentPoint;
                 }
@@ -208,9 +208,9 @@ function (paperjs, ProtoCommands, SrlStroke, SrlPoint) {
          */
         function createPointFromEvent(drawingEvent) {
             var newPoint = new SrlPoint(drawingEvent.point.x, drawingEvent.point.y);
-            newPoint.setId(generateUUID());
+            newPoint.setId(ClassUtils.generateUuid());
             newPoint.setTime(drawingEvent.event.timeStamp);
-            if (!isUndefined(drawingEvent.pressure)) {
+            if (!ClassUtils.isUndefined(drawingEvent.pressure)) {
                 newPoint.setPressure(drawingEvent.pressure);
             } else {
                 newPoint.setPressure(0.5);

@@ -71,7 +71,7 @@ function Playback(updateList, updateManager, graphics) {
          */
         for (var i = 0; i < commandList.length; i++) {
             var command = commandList[i];
-            if (command.commandType === CourseSketch.prutil.CommandType.ADD_STROKE && isPlaying) {
+            if (command.commandType === Commands.CommandType.ADD_STROKE && isPlaying) {
                 (function() {
                     var stroke = command.decodedData;
                     pointList = stroke.getPoints();
@@ -140,7 +140,7 @@ function Playback(updateList, updateManager, graphics) {
      * @param {SketchSurface} surface - the surface.
      */
     this.playNext = function(startTime, surface) {
-        if (!isUndefined(startTime)) {
+        if (!ClassUtils.isUndefined(startTime)) {
             startingTime = startTime;
         }
         graphics.setDrawUpdate(false);

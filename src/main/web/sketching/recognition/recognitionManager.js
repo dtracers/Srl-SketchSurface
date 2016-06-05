@@ -77,7 +77,7 @@
 
     function addTemplate(label, recognitionId, protoRecognitionTemplate, callback, templateType) {
         setTemplateData(label, recognitionId, protoRecognitionTemplate);
-        if (!isUndefined(templateType)) {
+        if (!ClassUtils.isUndefined(templateType)) {
             protoRecognitionTemplate.type = templateType;
         }
         console.log(protoRecognitionTemplate);

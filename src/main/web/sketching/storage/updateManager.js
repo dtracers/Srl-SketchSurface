@@ -1,5 +1,6 @@
-define('UpdateManager', ['DefaultSketchCommands', 'generated_proto/commands', 'generated_proto/sketchUtil', 'protobufUtils/sketchProtoConverter'],
-function(DefaultCommands, ProtoCommands, ProtoSketchUtil, ProtoUtil) {
+define('UpdateManager', ['DefaultSketchCommands', 'generated_proto/commands', 'generated_proto/sketchUtil',
+    'protobufUtils/classCreator', 'protobufUtils/sketchProtoConverter', 'sketchLibrary/SketchLibraryException'],
+function(DefaultCommands, ProtoCommands, ProtoSketchUtil, ClassUtils, ProtoUtil, SketchException) {
     var Commands = ProtoCommands.protobuf.srl.commands;
     var SketchUtil = ProtoSketchUtil.protobuf.srl.utils;
     var CommandUtil = ProtoUtil.commands;
@@ -13,13 +14,9 @@ function(DefaultCommands, ProtoCommands, ProtoSketchUtil, ProtoUtil) {
      */
     function UpdateException(message, cause) {
         this.name = 'UpdateException';
-        this.setMessage(message);
-        this.message = '';
-        this.setCause(cause);
-        this.createStackTrace();
+        this.superConstructor(message, cause);
     }
-
-    UpdateException.prototype = new BaseException();
+    ClassUtils.Inherits(UpdateException, SketchException);
 
     /**
      * @class UndoRedoException
@@ -27,11 +24,9 @@ function(DefaultCommands, ProtoCommands, ProtoSketchUtil, ProtoUtil) {
      */
     function UndoRedoException(message, cause) {
         this.name = 'UndoRedoException';
-        this.setMessage(message);
-        this.setCause(cause);
+        this.superConstructor(message, cause);
     }
-
-    UndoRedoException.prototype = new UpdateException();
+    ClassUtils.Inherits(UndoRedoException, UpdateException);
 
     /**
      * The update manager manages the lists of actions that have occurred for a
@@ -210,10 +205,10 @@ function(DefaultCommands, ProtoCommands, ProtoSketchUtil, ProtoUtil) {
          * @param {UUID} id - The id of which sketch to switch to.
          */
         function switchToSketch(id) {
-            if (ProtoUtil.isUndefined(sketchManager)) {
+            if (ClassUtils.isUndefined(sketchManager)) {
                 throw new UpdateException('Can not switch sketch with an invalid manager');
             }
-            if (ProtoUtil.isUndefined(id)) {
+            if (ClassUtils.isUndefined(id)) {
                 throw new UpdateException('Can not switch to an undefined sketch');
             }
             currentSketchId = id;
@@ -233,7 +228,7 @@ function(DefaultCommands, ProtoCommands, ProtoSketchUtil, ProtoUtil) {
         this.createMarker = function createMarker(userCreated, markerType, otherData) {
             var marker = new Commands.Marker();
             marker.setType(markerType);
-            if (!ProtoUtil.isUndefined(otherData)) {
+            if (!ClassUtils.isUndefined(otherData)) {
                 marker.setOtherData(otherData);
             }
 
@@ -241,7 +236,7 @@ function(DefaultCommands, ProtoCommands, ProtoSketchUtil, ProtoUtil) {
             command.setCommandType(Commands.CommandType.MARKER);
             command.setIsUserCreated(userCreated);
             command.setCommandData(marker.toArrayBuffer());
-            command.setCommandId(generateUUID());
+            command.setCommandId(ClassUtils.generateUuid());
             return command;
         };
 
@@ -261,7 +256,7 @@ function(DefaultCommands, ProtoCommands, ProtoSketchUtil, ProtoUtil) {
                     var pluginUpdate = updateList[updateIndex - offset];
                     var updateType = lastUpdateType;
                     for (var i = 0; i < plugins.length; i++) {
-                        if (!ProtoUtil.isUndefined(plugins[i].addUpdate)) {
+                        if (!ClassUtils.isUndefined(plugins[i].addUpdate)) {
                             plugins[i].addUpdate(pluginUpdate, redraw, updateIndex, updateType, updateCreatedByPlugin);
                         }
                     }
@@ -271,7 +266,7 @@ function(DefaultCommands, ProtoCommands, ProtoSketchUtil, ProtoUtil) {
                 }
             } catch (exception) {
                 executionLock = false;
-                if (!ProtoUtil.isUndefined(onError)) {
+                if (!ClassUtils.isUndefined(onError)) {
                     onError(exception);
                 } else {
                     console.error(exception);
@@ -422,7 +417,7 @@ function(DefaultCommands, ProtoCommands, ProtoSketchUtil, ProtoUtil) {
             var command = update.getCommands()[0];
             // Marker will not have any other commands with its update
             if (command.commandType === Commands.CommandType.MARKER) {
-                var marker = ProtoUtil.decodeProtobuf(command.commandData, Commands.Markrt);
+                var marker = ProtoUtil.decode(command.commandData, Commands.Markrt);
                 if (marker.type === Commands.Marker.MarkerType.SPLIT) {
                     var tempIndex = currentUpdateIndex;
                     currentUpdateIndex += parseInt(marker.otherData, 10) + 1;
@@ -447,11 +442,11 @@ function(DefaultCommands, ProtoCommands, ProtoSketchUtil, ProtoUtil) {
             } else if (command.commandType === Commands.CommandType.CREATE_SKETCH) {
                 // For undo we need the sketch id before we switch
                 command.decodedData = currentSketchId;
-                var sketchData = ProtoUtil.decodeProtobuf(command.commandData, Commands.ActionCreateSketch);
+                var sketchData = ProtoUtil.decode(command.commandData, Commands.ActionCreateSketch);
                 var newSketchId = sketchData.sketchId.idChain[0];
-                if (!ProtoUtil.isUndefined(sketchManager) &&
-                    (!ProtoUtil.isUndefined(sketchManager.getCurrentSketch()) && sketchManager.getCurrentSketch().id !== newSketchId) ||
-                    ProtoUtil.isUndefined(sketchManager.getCurrentSketch())) {
+                if (!ClassUtils.isUndefined(sketchManager) &&
+                    (!ClassUtils.isUndefined(sketchManager.getCurrentSketch()) && sketchManager.getCurrentSketch().id !== newSketchId) ||
+                    ClassUtils.isUndefined(sketchManager.getCurrentSketch())) {
                     sketchManager.createSketch(newSketchId, sketchData);
                 }
                 switchToSketch(newSketchId);
@@ -459,7 +454,7 @@ function(DefaultCommands, ProtoCommands, ProtoSketchUtil, ProtoUtil) {
             } else if (command.commandType === Commands.CommandType.SWITCH_SKETCH) {
                 // For undoing
                 command.decodedData = currentSketchId;
-                var sketchId = ProtoUtil.decodeProtobuf(command.commandData, SketchUtil.IdChain).idChain[0];
+                var sketchId = ProtoUtil.decode(command.commandData, SketchUtil.IdChain).idChain[0];
                 switchToSketch(sketchId);
             }
             return update.redo();
@@ -475,20 +470,20 @@ function(DefaultCommands, ProtoCommands, ProtoSketchUtil, ProtoUtil) {
 
             var command = update.getCommands()[0];
             if (command.commandType === Commands.CommandType.MARKER) {
-                var marker = ProtoUtil.decodeProtobuf(command.commandData, Commands.Marker);
+                var marker = ProtoUtil.decode(command.commandData, Commands.Marker);
                 if (marker.type === Commands.Marker.MarkerType.SPLIT) {
                     currentUpdateIndex += parseInt(marker.otherData, 10) - 1;
                 }
                 // Does not actually change sketch so no drawing happens
                 return false;
             } else if (command.commandType === Commands.CommandType.CREATE_SKETCH) {
-                var sketchData = ProtoUtil.decodeProtobuf(command.commandData, Commands.ActionCreateSketch);
+                var sketchData = ProtoUtil.decode(command.commandData, Commands.ActionCreateSketch);
                 var id = sketchData.sketchId.idChain[0];
 
                 // Undo happens in reverse order so it must happen before switchToSketchHappens
                 update.undo();
 
-                if (!ProtoUtil.isUndefined(sketchManager)) {
+                if (!ClassUtils.isUndefined(sketchManager)) {
                     sketchManager.deleteSketch(id);
                 }
                 switchToSketch(command.decodedData);
@@ -584,7 +579,7 @@ function(DefaultCommands, ProtoCommands, ProtoSketchUtil, ProtoUtil) {
             var commandList = update.getCommands();
             var currentCommand = commandList[0];
             if (currentCommand.commandType === Commands.CommandType.MARKER) {
-                var marker = ProtoUtil.decodeProtobuf(currentCommand.commandData, Commands.Marker);
+                var marker = ProtoUtil.decode(currentCommand.commandData, Commands.Marker);
                 if (marker.type === Commands.Marker.MarkerType.SUBMISSION) {
                     return true;
                 }
@@ -604,7 +599,7 @@ function(DefaultCommands, ProtoCommands, ProtoSketchUtil, ProtoUtil) {
             var commandList = update.getCommands();
             var currentCommand = commandList[0];
             if (currentCommand.commandType === Commands.CommandType.MARKER) {
-                var marker = ProtoUtil.decodeProtobuf(currentCommand.commandData, Commands.Marker);
+                var marker = ProtoUtil.decode(currentCommand.commandData, Commands.Marker);
                 if (marker.type === Commands.Marker.MarkerType.SAVE) {
                     return true;
                 }
@@ -671,7 +666,7 @@ function(DefaultCommands, ProtoCommands, ProtoSketchUtil, ProtoUtil) {
                         percentBar.updatePercentBar(1, 1);
                         percentBar.finishWaiting(300);
                     }
-                    if (!ProtoUtil.isUndefined(finishedCallback)) {
+                    if (!ClassUtils.isUndefined(finishedCallback)) {
                         finishedCallback();
                     }
                     percentBar = undefined;
@@ -720,7 +715,7 @@ function(DefaultCommands, ProtoCommands, ProtoSketchUtil, ProtoUtil) {
          * @returns {SrlUpdate} the cleaned version of the update.
          */
         function cleanUpdate(update) {
-            return ProtoUtil.decodeProtobuf(update.toArrayBuffer(), Commands.SrlUpdate);
+            return ProtoUtil.decode(update.toArrayBuffer(), Commands.SrlUpdate);
         }
     }
 

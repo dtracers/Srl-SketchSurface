@@ -151,12 +151,12 @@ function (paperjs, ProtoCommands, SrlStroke, SrlShape) {
         function loadStroke(stroke, color) {
             ps.activate();
             var object = ps.project.getItem({ data: { id: stroke.getId() } });
-            if (!isUndefined(object) && object !== null) {
+            if (!ClassUtils.isUndefined(object) && object !== null) {
                 return; // already added to the sketch.
             }
             var path = new ps.Path({ strokeWidth: 2, strokeCap: 'round', selected: false, strokeColor: 'black' });
             path.data.id = stroke.getId();
-            if (!isUndefined(color)) {
+            if (!ClassUtils.isUndefined(color)) {
                 path.strokeColor = color;
             }
             var pointList = stroke.getPoints();
@@ -218,7 +218,7 @@ function (paperjs, ProtoCommands, SrlStroke, SrlShape) {
                 } else if (lastUpdateType === -1) {
                     removeItem(stroke.getId());
                 }
-            } else if (command.commandType === CourseSketch.prutil.CommandType.CLEAR) {
+            } else if (command.commandType === Commands.CommandType.CLEAR) {
                 if (lastUpdateType === 0 || lastUpdateType === 1) {
                     ps.project.activeLayer.removeChildren();
                 } else {

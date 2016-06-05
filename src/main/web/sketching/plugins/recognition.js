@@ -44,7 +44,7 @@
                 console.log('submitting an update to a remote computer for recognition');
                 CourseSketch.recognition.addUpdate(sketchId, cleanUpdate, function(err, msg) {
                     console.log('It worked@!!!', err, msg);
-                    if ((!isUndefined(err) && err !== null) || isUndefined(msg)) {
+                    if ((!ClassUtils.isUndefined(err) && err !== null) || isUndefined(msg)) {
                         console.log('problems with the response');
                         return;
                     }
