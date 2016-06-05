@@ -14,4 +14,11 @@ define('RequireTest', ['chai', 'mocha', 'sinon', 'sinon-chai', 'chai-protobuf'],
         timeout: 5000
     });
     mocha.checkLeaks();
+    chai.use(SinonChai);
+
+    chai.use(function (_chai, _) {
+        _chai.Assertion.addMethod('withMessage', function (msg) {
+            _.flag(this, 'message', msg);
+        });
+    });
 });

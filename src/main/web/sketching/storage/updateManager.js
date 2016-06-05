@@ -13,8 +13,8 @@ function(DefaultCommands, ProtoCommands, ProtoSketchUtil, ClassUtils, ProtoUtil,
      * @param {BaseException} cause - The cause of the exception.
      */
     function UpdateException(message, cause) {
-        this.name = 'UpdateException';
         this.superConstructor(message, cause);
+        this.name = 'UpdateException';
     }
     ClassUtils.Inherits(UpdateException, SketchException);
 
@@ -23,8 +23,8 @@ function(DefaultCommands, ProtoCommands, ProtoSketchUtil, ClassUtils, ProtoUtil,
      * @extends UpdateException
      */
     function UndoRedoException(message, cause) {
-        this.name = 'UndoRedoException';
         this.superConstructor(message, cause);
+        this.name = 'UndoRedoException';
     }
     ClassUtils.Inherits(UndoRedoException, UpdateException);
 

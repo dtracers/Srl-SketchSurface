@@ -80,7 +80,7 @@
         QUnit.test("#createSketch will create an event in updateList", function(assert) {
             var sketch = new SketchSurface();
             var obj = new UpdateManager();
-            var spy = this.spy(obj, "addUpdate");
+            var spy = sinon.spy(obj, "addUpdate");
             sketch.bindToUpdateList(obj);
 
             sketch.createSketchUpdate();

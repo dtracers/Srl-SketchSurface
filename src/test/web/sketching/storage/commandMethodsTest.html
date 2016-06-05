@@ -31,7 +31,7 @@
         test("an exception is thrown when type does not exist", function(assert) {
             var command = CourseSketch.prutil.SrlCommand();
             command.commandType = -1; // a type that does not exist
-            var spy = this.spy(command, "getCommandTypeName");
+            var spy = sinon.spy(command, "getCommandTypeName");
 
             try {
                 command.getCommandTypeName();
@@ -48,7 +48,7 @@
 
             for (var i = 0; i < minNumInList; i++) {
                 var srlCommand = CourseSketch.prutil.SrlCommand();
-                var stub = this.stub(srlCommand, 'redo');
+                var stub = sinon.stub(srlCommand, 'redo');
                 stub.returns(true);
                 updateList.getCommands().push(srlCommand);
             }
@@ -62,7 +62,7 @@
             var listOfStubs = [];
             for (var i = 0; i < minNumInList; i++) {
                 var srlCommand = CourseSketch.prutil.SrlCommand();
-                var stub = this.stub(srlCommand, 'redo');
+                var stub = sinon.stub(srlCommand, 'redo');
                 stub.returns(true);
                 updateList.getCommands().push(srlCommand);
                 listOfStubs.push(stub);
@@ -80,7 +80,7 @@
 
             for (var i = 0; i < minNumInList; i++) {
                 var srlCommand = CourseSketch.prutil.SrlCommand();
-                var stub = this.stub(srlCommand, 'redo');
+                var stub = sinon.stub(srlCommand, 'redo');
                 stub.returns(false);
                 updateList.getCommands().push(srlCommand);
             }
@@ -93,13 +93,13 @@
 
             for (var i = 0; i < minNumInList; i++) {
                 var srlCommand = CourseSketch.prutil.SrlCommand();
-                var stub = this.stub(srlCommand, 'redo');
+                var stub = sinon.stub(srlCommand, 'redo');
                 stub.returns(false);
                 updateList.getCommands().push(srlCommand);
             }
 
             var srlCommand = CourseSketch.prutil.SrlCommand();
-            var stub = this.stub(srlCommand, 'redo');
+            var stub = sinon.stub(srlCommand, 'redo');
             stub.returns(true); // should make everything return false
             updateList.getCommands().push(srlCommand);
 
@@ -112,7 +112,7 @@
             var listOfStubs = [];
             for (var i = 0; i < minNumInList; i++) {
                 var srlCommand = CourseSketch.prutil.SrlCommand();
-                var stub = this.stub(srlCommand, 'redo');
+                var stub = sinon.stub(srlCommand, 'redo');
                 stub.returns(true);
                 updateList.getCommands().push(srlCommand);
                 listOfStubs.push(stub);
@@ -138,7 +138,7 @@
 
             for (var i = 0; i < minNumInList; i++) {
                 var srlCommand = CourseSketch.prutil.SrlCommand();
-                var stub = this.stub(srlCommand, 'undo');
+                var stub = sinon.stub(srlCommand, 'undo');
                 stub.returns(true);
                 updateList.getCommands().push(srlCommand);
             }
@@ -152,7 +152,7 @@
             var listOfStubs = [];
             for (var i = 0; i < minNumInList; i++) {
                 var srlCommand = CourseSketch.prutil.SrlCommand();
-                var stub = this.stub(srlCommand, 'undo');
+                var stub = sinon.stub(srlCommand, 'undo');
                 stub.returns(true);
                 updateList.getCommands().push(srlCommand);
                 listOfStubs.push(stub);
@@ -170,7 +170,7 @@
 
             for (var i = 0; i < minNumInList; i++) {
                 var srlCommand = CourseSketch.prutil.SrlCommand();
-                var stub = this.stub(srlCommand, 'undo');
+                var stub = sinon.stub(srlCommand, 'undo');
                 stub.returns(false);
                 updateList.getCommands().push(srlCommand);
             }
@@ -183,13 +183,13 @@
 
             for (var i = 0; i < minNumInList; i++) {
                 var srlCommand = CourseSketch.prutil.SrlCommand();
-                var stub = this.stub(srlCommand, 'undo');
+                var stub = sinon.stub(srlCommand, 'undo');
                 stub.returns(false);
                 updateList.getCommands().push(srlCommand);
             }
 
             var srlCommand = CourseSketch.prutil.SrlCommand();
-            var stub = this.stub(srlCommand, 'undo');
+            var stub = sinon.stub(srlCommand, 'undo');
             stub.returns(true); // should make everything return false
             updateList.getCommands().push(srlCommand);
 
@@ -202,7 +202,7 @@
             var listOfStubs = [];
             for (var i = 0; i < minNumInList; i++) {
                 var srlCommand = CourseSketch.prutil.SrlCommand();
-                var stub = this.stub(srlCommand, 'undo');
+                var stub = sinon.stub(srlCommand, 'undo');
                 stub.returns(true);
                 updateList.getCommands().push(srlCommand);
                 listOfStubs.push(stub);
@@ -237,7 +237,7 @@
         });
 
         test("addRedoMethod Throws error if method already exists", function(assert) {
-            var spy = this.spy(Commands.SrlCommand().addRedoMethod);
+            var spy = sinon.spy(Commands.SrlCommand().addRedoMethod);
             try {
                 spy(Commands.CommandType.MARKER, function() {
                 });
@@ -248,7 +248,7 @@
         });
 
         test("removeRedoMethod Throws error if method does not exist", function(assert) {
-            var spy = this.spy(Commands.SrlCommand().removeRedoMethod);
+            var spy = sinon.spy(Commands.SrlCommand().removeRedoMethod);
             try {
                 spy(-1);
             } catch (exception) {
@@ -257,7 +257,7 @@
         });
 
         test("addUndoMethod Throws error if method already exists", function(assert) {
-            var spy = this.spy(Commands.SrlCommand().addUndoMethod);
+            var spy = sinon.spy(Commands.SrlCommand().addUndoMethod);
             try {
                 spy(Commands.CommandType.MARKER, function() {
                 });
@@ -268,7 +268,7 @@
         });
 
         test("removeUndoMethod Throws error if method does not exist", function(assert) {
-            var spy = this.spy(Commands.SrlCommand().removeUndoMethod);
+            var spy = sinon.spy(Commands.SrlCommand().removeUndoMethod);
             try {
                 spy(-1);
             } catch (exception) {
@@ -277,7 +277,7 @@
         });
 
         test("removeUndoMethod Throws error called with Undefined", function(assert) {
-            var spy = this.spy(Commands.SrlCommand().removeUndoMethod);
+            var spy = sinon.spy(Commands.SrlCommand().removeUndoMethod);
             try {
                 spy(undefined);
             } catch (exception) {
@@ -286,7 +286,7 @@
         });
 
         test("removeRedoMethod Throws error called with Undefined", function(assert) {
-            var spy = this.spy(Commands.SrlCommand().removeRedoMethod);
+            var spy = sinon.spy(Commands.SrlCommand().removeRedoMethod);
             try {
                 spy(undefined);
             } catch (exception) {
@@ -295,7 +295,7 @@
         });
 
         test("addRedoMethod Throws error called with Undefined", function(assert) {
-            var spy = this.spy(Commands.SrlCommand().addRedoMethod);
+            var spy = sinon.spy(Commands.SrlCommand().addRedoMethod);
             try {
                 spy(undefined, function() {
                 });
@@ -305,7 +305,7 @@
         });
 
         test("addRedoMethod Throws error called with Undefined", function(assert) {
-            var spy = this.spy(Commands.SrlCommand().addUndoMethod);
+            var spy = sinon.spy(Commands.SrlCommand().addUndoMethod);
             try {
                 spy(undefined, function() {
                 });
@@ -330,7 +330,7 @@
         });
         test("tests that calling redo on a command works", function(assert) {
             var command = CommandUtil.createBaseCommand(Commands.CommandType.MARKER, false);
-            var spy = this.spy();
+            var spy = sinon.spy();
             Commands.SrlCommand().addRedoMethod(Commands.CommandType.MARKER, spy);
             command.redo();
             ok(spy.calledOnce);
@@ -338,7 +338,7 @@
 
         test("tests that calling undo on a command works", function(assert) {
             var command = CommandUtil.createBaseCommand(Commands.CommandType.MARKER, false);
-            var spy = this.spy();
+            var spy = sinon.spy();
             Commands.SrlCommand().addUndoMethod(Commands.CommandType.MARKER, spy);
             command.undo();
             ok(spy.calledOnce);
