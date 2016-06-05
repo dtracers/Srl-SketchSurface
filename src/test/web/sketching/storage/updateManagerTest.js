@@ -813,147 +813,135 @@ require(['DefaultSketchCommands', 'UpdateManager', 'generated_proto/commands',
                     clock.tick(10);
                 });
             });
+
+            describe("split tests", function() {
+                beforeEach(function () {
+                    cleanFakeSketchManager = new SketchSurfaceManager();
+                    try {
+                        Commands.SrlCommand.removeRedoMethod(Commands.CommandType.ASSIGN_ATTRIBUTE);
+                        Commands.SrlCommand.removeUndoMethod(Commands.CommandType.ASSIGN_ATTRIBUTE);
+                    } catch(ignoredException) {
+
+                    }
+                });
+
+                afterEach(function () {
+                    try {
+                        Commands.SrlCommand.removeRedoMethod(Commands.CommandType.ASSIGN_ATTRIBUTE);
+                        Commands.SrlCommand.removeUndoMethod(Commands.CommandType.ASSIGN_ATTRIBUTE);
+                    } catch(ignoredException) {
+
+                    }
+                });
+
+                it("a single split", function (done) {
+                    var updateList = new UpdateManager(this.sketch, RequireTest.createErrorCallback(expect, done));
+
+                    var startSplitObject = updateList.createMarker(true, Commands.Marker.MarkerType.SPLIT, "1");
+                    var startSplitUpdate = CommandUtil.createUpdateFromCommands([startSplitObject]);
+                    updateList.addUpdate(startSplitUpdate);
+
+                    var undoStub = sinon.stub();
+                    undoStub.returns(false); // we are not drawing.
+
+                    var redoStub = sinon.stub();
+                    redoStub.returns(false); // we are not drawing.
+                    Commands.SrlCommand.addRedoMethod(Commands.CommandType.ASSIGN_ATTRIBUTE, redoStub);
+                    Commands.SrlCommand.addUndoMethod(Commands.CommandType.ASSIGN_ATTRIBUTE, undoStub);
+                    var assignAt = CommandUtil.createBaseCommand(Commands.CommandType.ASSIGN_ATTRIBUTE, true);
+                    var assignUpdate = CommandUtil.createUpdateFromCommands([assignAt]);
+                    updateList.addUpdate(assignUpdate);
+
+                    var endSplitObject = updateList.createMarker(true, Commands.Marker.MarkerType.SPLIT, "-1");
+                    var endSplitUpdate = CommandUtil.createUpdateFromCommands([endSplitObject]);
+                    updateList.addUpdate(endSplitUpdate);
+
+                    expect(redoStub).to.be.not.called;
+                    expect(undoStub).to.be.not.called;
+                    done();
+                });
+            });
+            describe("complex tests", function () {
+                it("a single split then an undo then a redo", function (done) {
+                    var updateList = new UpdateManager(cleanFakeSketchManager, RequireTest.createErrorCallback(expect, done));
+
+                    var startSplitObject = updateList.createMarker(true, Commands.Marker.MarkerType.SPLIT, "1");
+                    var startSplitUpdate = CommandUtil.createUpdateFromCommands([startSplitObject]);
+                    updateList.addUpdate(startSplitUpdate);
+
+                    var undoStub = sinon.stub();
+                    undoStub.returns(false); // we are not drawing.
+
+                    var redoStub = sinon.stub();
+                    redoStub.returns(false); // we are not drawing.
+                    Commands.SrlCommand.addRedoMethod(Commands.CommandType.ASSIGN_ATTRIBUTE, redoStub);
+                    Commands.SrlCommand.addUndoMethod(Commands.CommandType.ASSIGN_ATTRIBUTE, undoStub);
+                    var assignAt = CommandUtil.createBaseCommand(Commands.CommandType.ASSIGN_ATTRIBUTE, true);
+                    var assignUpdate = CommandUtil.createUpdateFromCommands([assignAt]);
+                    updateList.addUpdate(assignUpdate);
+
+                    var endSplitObject = updateList.createMarker(true, Commands.Marker.MarkerType.SPLIT, "-1");
+                    var endSplitUpdate = CommandUtil.createUpdateFromCommands([endSplitObject]);
+                    updateList.addUpdate(endSplitUpdate);
+
+                    var undoMarkerObject = CommandUtil.createBaseCommand(Commands.CommandType.UNDO, false);
+                    var undoUpdate = CommandUtil.createUpdateFromCommands([undoMarkerObject]);
+                    updateList.addUpdate(undoUpdate);
+
+                    expect(updateList.getCurrentPointer()).to.equal(0);
+
+                    var redoMarkerObject = CommandUtil.createBaseCommand(Commands.CommandType.REDO, false);
+                    var redoUpdate = CommandUtil.createUpdateFromCommands([redoMarkerObject]);
+                    updateList.addUpdate(redoUpdate);
+
+                    expect(updateList.getCurrentPointer()).to.equal(updateList.getListLength() - 2);
+
+                    expect(redoStub).to.be.not.called;
+                    expect(undoStub).to.be.not.called;
+                    done();
+                });
+            });
+
+            describe("plugin tests", function () {
+                beforeEach(function () {
+                    try {
+                        Commands.SrlCommand.removeRedoMethod(Commands.CommandType.ASSIGN_ATTRIBUTE);
+                        Commands.SrlCommand.removeUndoMethod(Commands.CommandType.ASSIGN_ATTRIBUTE);
+                    } catch(ignoredException) {
+
+                    }
+                });
+                it("plugin gets correct data for simple update", function (done) {
+                    expect(5);
+                    var clock = sinon.useFakeTimers();
+                    var stub = sinon.stub();
+                    stub.returns(false); // we are not drawing.
+
+                    Commands.SrlCommand.addRedoMethod(Commands.CommandType.ASSIGN_ATTRIBUTE, stub);
+                    var updateList = new UpdateManager(cleanFakeSketchManager, onErrorCallback);
+
+                    var markerObject = CommandUtil.createBaseCommand(Commands.CommandType.ASSIGN_ATTRIBUTE, true);
+                    var update = CommandUtil.createUpdateFromCommands([markerObject]);
+
+                    // actual test
+                    updateList.addPlugin({
+                        addUpdate: function (pluginUpdate, redraw, updateIndex, lastUpdateType) {
+                            ChaiProtobuf.updateEqual(expect, pluginUpdate, update);
+                            expect(redraw).to.equal(false);
+                            expect(updateIndex).to.equal(1);
+                            expect(lastUpdateType).to.equal(0);
+                            done();
+                        }
+                    });
+
+                    updateList.addSynchronousUpdate(update);
+
+                    // only used for plugins not for update itself
+                    clock.tick(10);
+                    expect(stub).to.be.calledOnce;
+                });
+            });
         });
 
         mocha.run();
-        /*
-
-
-
-        QUnit.module("SPLIT tests", {
-            sketch: {
-                resetSketch: function () {
-                }
-            },
-            sketchManager: new SketchSurfaceManager()
-        });
-        it("a single split", function (done) {
-
-
-            var updateList = new UpdateManager(this.sketch, RequireTest.createErrorCallback(expect, done));
-
-            var startSplitObject = updateList.createMarker(true, Commands.Marker.MarkerType.SPLIT, "1");
-            var startSplitUpdate = CommandUtil.createUpdateFromCommands([startSplitObject]);
-            updateList.addUpdate(startSplitUpdate);
-
-            var undoStub = sinon.stub();
-            undoStub.returns(false); // we are not drawing.
-
-            var redoStub = sinon.stub();
-            redoStub.returns(false); // we are not drawing.
-            Commands.SrlCommand.addRedoMethod(Commands.CommandType.ASSIGN_ATTRIBUTE, redoStub);
-            Commands.SrlCommand.addUndoMethod(Commands.CommandType.ASSIGN_ATTRIBUTE, undoStub);
-            var assignAt = CommandUtil.createBaseCommand(Commands.CommandType.ASSIGN_ATTRIBUTE, true);
-            var assignUpdate = CommandUtil.createUpdateFromCommands([assignAt]);
-            updateList.addUpdate(assignUpdate);
-
-            var endSplitObject = updateList.createMarker(true, Commands.Marker.MarkerType.SPLIT, "-1");
-            var endSplitUpdate = CommandUtil.createUpdateFromCommands([endSplitObject]);
-            updateList.addUpdate(endSplitUpdate);
-
-            sinon.assert.notCalled(redoStub);
-            sinon.assert.notCalled(undoStub);
-            Commands.SrlCommand.removeRedoMethod(Commands.CommandType.ASSIGN_ATTRIBUTE);
-            Commands.SrlCommand.removeUndoMethod(Commands.CommandType.ASSIGN_ATTRIBUTE);
-            done();
-        });
-
-        QUnit.module("Complex tests", {
-            sketch: {
-                resetSketch: function () {
-                }
-            },
-        });
-
-        it("a single split then an undo then a redo", function (done) {
-
-
-            var updateList = new UpdateManager(cleanFakeSketchManager, RequireTest.createErrorCallback(expect, done));
-
-            var startSplitObject = updateList.createMarker(true, Commands.Marker.MarkerType.SPLIT, "1");
-            var startSplitUpdate = CommandUtil.createUpdateFromCommands([startSplitObject]);
-            updateList.addUpdate(startSplitUpdate);
-
-            var undoStub = sinon.stub();
-            undoStub.returns(false); // we are not drawing.
-
-            var redoStub = sinon.stub();
-            redoStub.returns(false); // we are not drawing.
-            Commands.SrlCommand.addRedoMethod(Commands.CommandType.ASSIGN_ATTRIBUTE, redoStub);
-            Commands.SrlCommand.addUndoMethod(Commands.CommandType.ASSIGN_ATTRIBUTE, undoStub);
-            var assignAt = CommandUtil.createBaseCommand(Commands.CommandType.ASSIGN_ATTRIBUTE, true);
-            var assignUpdate = CommandUtil.createUpdateFromCommands([assignAt]);
-            updateList.addUpdate(assignUpdate);
-
-            var endSplitObject = updateList.createMarker(true, Commands.Marker.MarkerType.SPLIT, "-1");
-            var endSplitUpdate = CommandUtil.createUpdateFromCommands([endSplitObject]);
-            updateList.addUpdate(endSplitUpdate);
-
-            var undoMarkerObject = CommandUtil.createBaseCommand(Commands.CommandType.UNDO, false);
-            var undoUpdate = CommandUtil.createUpdateFromCommands([undoMarkerObject]);
-            updateList.addUpdate(undoUpdate);
-
-            assert.equal(updateList.getCurrentPointer(), 0);
-
-            var redoMarkerObject = CommandUtil.createBaseCommand(Commands.CommandType.REDO, false);
-            var redoUpdate = CommandUtil.createUpdateFromCommands([redoMarkerObject]);
-            updateList.addUpdate(redoUpdate);
-
-            assert.equal(updateList.getCurrentPointer(), updateList.getListLength() - 2);
-
-            sinon.assert.notCalled(redoStub);
-            sinon.assert.notCalled(undoStub);
-            Commands.SrlCommand.removeRedoMethod(Commands.CommandType.ASSIGN_ATTRIBUTE);
-            Commands.SrlCommand.removeUndoMethod(Commands.CommandType.ASSIGN_ATTRIBUTE);
-            done();
-        });
-
-        QUnit.module("plugin tests", {
-            sketch: {
-                resetSketch: function () {
-                },
-                id: "SketchId!"
-            },
-            sketchManager: {
-                getCurrentSketch: function () {
-                    return this.sketch;
-                },
-                deleteSketch: function () {
-                },
-                createSketch: function () {
-                }
-            },
-        });
-
-        it("plugin gets correct data for simple update", function (done) {
-            expect(5);
-            var clock = sinon.useFakeTimers();
-            var stub = sinon.stub();
-            stub.returns(false); // we are not drawing.
-
-            Commands.SrlCommand.addRedoMethod(Commands.CommandType.ASSIGN_ATTRIBUTE, stub);
-            var updateList = new UpdateManager(undefined, onErrorCallback);
-
-            var markerObject = CommandUtil.createBaseCommand(Commands.CommandType.ASSIGN_ATTRIBUTE, true);
-            var update = CommandUtil.createUpdateFromCommands([markerObject]);
-
-            // actual test
-            updateList.addPlugin({
-                addUpdate: function (pluginUpdate, redraw, updateIndex, lastUpdateType) {
-                    assert.updateEqual(pluginUpdate, update);
-                    assert.equal(redraw, false);
-                    assert.equal(updateIndex, 1);
-                    assert.equal(lastUpdateType, 0);
-                }
-            });
-
-            updateList.addSynchronousUpdate(update);
-
-            // only used for plugins not for update itself
-            clock.tick(10);
-            assert.ok(stub.calledOnce, "spy is called once");
-            Commands.SrlCommand.removeRedoMethod(Commands.CommandType.ASSIGN_ATTRIBUTE);
-        });
-        QUnit.start();
-*/
     });
