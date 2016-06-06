@@ -1,14 +1,13 @@
 /**
  * Created by David Windows on 5/13/2016.
  */
-(function () {
-
+define("RecognitionPlugin", [], function () {
     /**
      * A plugin used to send updates to the server.
      *
      * @class RecognitionPlugin
      */
-    function RecognitionPlugin(updateManager, sketchId) {
+    function RecognitionPlugin(updateManager, sketchId, recognitionManager) {
 
         /**
          * The id of this plugin.
@@ -39,10 +38,9 @@
          */
         this.addUpdate = function(update, redraw, updateIndex, updateType, updatePluginId) {
             console.log('adding update!');
-            var cleanUpdate = CourseSketch.prutil.cleanProtobuf(update, CourseSketch.prutil.getSrlUpdateClass());
             if (updatePluginId !== pluginId) {
                 console.log('submitting an update to a remote computer for recognition');
-                CourseSketch.recognition.addUpdate(sketchId, cleanUpdate, function(err, msg) {
+                recognitionManager.addUpdate(sketchId, update, function(err, msg) {
                     console.log('It worked@!!!', err, msg);
                     if ((!ClassUtils.isUndefined(err) && err !== null) || isUndefined(msg)) {
                         console.log('problems with the response');
@@ -67,7 +65,7 @@
      * @param {UUID} sketchId The id of the sketch that this recognition plugin is being created for.
      * @returns {RecognitionPlugin}
      */
-    CourseSketch.createRecognitionPlugin = function(updateManager, sketchId) {
-        return new RecognitionPlugin(updateManager, sketchId);
+    return function createRecognitionPlugin(updateManager, sketchId, recognitionManager) {
+        return new RecognitionPlugin(updateManager, sketchId, recognitionManager);
     };
-})();
+});

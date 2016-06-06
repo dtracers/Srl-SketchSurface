@@ -14,8 +14,8 @@ function(ProtoCommands, ProtoSketchUtil, ProtoUtil, ClassUtils, SketchException)
      * @extends BaseException
      */
     function CommandException(message, cause) {
-        this.name = 'CommandException';
         this.superConstructor(message, cause);
+        this.name = 'CommandException';
     }
     ClassUtils.Inherits(CommandException, SketchException);
 
@@ -96,7 +96,7 @@ function(ProtoCommands, ProtoSketchUtil, ProtoUtil, ClassUtils, SketchException)
                 return '' + type;
             }
         }
-        throw new CourseSketch.prutil.ProtobufException('The assigned type (' + commandType + ') is not a value for enum CommandType');
+        throw new CommandException('The assigned type (' + commandType + ') is not a value for enum CommandType');
     };
 
     ProtoSrlCommand.decodedData = false;

@@ -8,7 +8,7 @@ try {
 
 require(['DefaultSketchCommands', 'UpdateManager', 'generated_proto/commands',
         'generated_proto/sketchUtil', 'protobufUtils/classCreator', 'protobufUtils/sketchProtoConverter', 'SketchSurfaceManager', 'RequireTest'],
-    function (CommandException,UpdateManagerModule, ProtoCommands, GenericProtobuf, ClassUtils, ProtoUtil, SketchSurfaceManager, RequireTest) {
+    function (CommandException, UpdateManagerModule, ProtoCommands, GenericProtobuf, ClassUtils, ProtoUtil, SketchSurfaceManager, RequireTest) {
         var expect = chai.expect;
         var UpdateManager = UpdateManagerModule.UpdateManager;
         var Commands = ProtoCommands.protobuf.srl.commands;
@@ -925,11 +925,12 @@ require(['DefaultSketchCommands', 'UpdateManager', 'generated_proto/commands',
 
                     // actual test
                     updateList.addPlugin({
-                        addUpdate: function (pluginUpdate, redraw, updateIndex, lastUpdateType) {
+                        addUpdate: function (pluginUpdate, redraw, updateIndex, lastUpdateType, updatePluginId) {
                             ChaiProtobuf.updateEqual(expect, pluginUpdate, update);
                             expect(redraw).to.equal(false);
                             expect(updateIndex).to.equal(1);
                             expect(lastUpdateType).to.equal(0);
+                            expect(updatePluginId).to.equal(undefined);
                             done();
                         }
                     });
@@ -942,6 +943,5 @@ require(['DefaultSketchCommands', 'UpdateManager', 'generated_proto/commands',
                 });
             });
         });
-
         mocha.run();
     });

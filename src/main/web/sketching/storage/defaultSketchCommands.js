@@ -8,7 +8,7 @@
 define('DefaultSketchCommands', ['BaseCommands', 'generated_proto/commands', 'generated_proto/sketchUtil', 'protobufUtils/sketchProtoConverter',
     'protobufUtils/classCreator',
     'sketchLibrary/SrlStroke', 'sketchLibrary/SrlShape'],
-function(BaseCommands, ProtoCommands, ProtoSketchUtil, ProtoUtil, ClassUtils, SrlStroke, SrlShape) {
+function(CommandException, ProtoCommands, ProtoSketchUtil, ProtoUtil, ClassUtils, SrlStroke, SrlShape) {
     var Commands = ProtoCommands.protobuf.srl.commands;
     var SketchUtil = ProtoSketchUtil.protobuf.srl.utils;
     var CommandUtil = ProtoUtil.commands;
@@ -283,5 +283,8 @@ function(BaseCommands, ProtoCommands, ProtoSketchUtil, ProtoUtil, ClassUtils, Sr
             }
         }
     };
+
+    // pass the up through the default exceptions
+    return CommandException;
 
 });

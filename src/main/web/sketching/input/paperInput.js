@@ -1,5 +1,6 @@
-define('SketchGraphics', ['paperjs', 'generated_proto/commands', 'sketchLibrary/SrlStroke', 'sketchLibrary/SrlPoint'],
-function (paperjs, ProtoCommands, SrlStroke, SrlPoint) {
+define('SketchInputListener', ['paperjs', 'generated_proto/commands', 'sketchLibrary/SrlStroke',
+    'sketchLibrary/SrlPoint', 'protobfUtils/classCreator'],
+function (paperjs, ProtoCommands, SrlStroke, SrlPoint, ClassUtils) {
     var Key = paperjs.Key;
 
     /**
@@ -218,15 +219,6 @@ function (paperjs, ProtoCommands, SrlStroke, SrlPoint) {
             newPoint.setSize(0.5/*drawingEvent.size*/);
             newPoint.setUserCreated(true);
             return newPoint;
-        }
-
-        /**
-         * Creates and returns a time stamp every time this function is called.
-         *
-         * @returns {Number} - The time stamp.
-         */
-        function createTimeStamp() {
-            return new Date().getTime();
         }
     }
 });
