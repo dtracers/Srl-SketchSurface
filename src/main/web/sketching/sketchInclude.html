@@ -3,6 +3,9 @@
     <link rel="stylesheet" href="/src/sketching/plugins/backgrounds.css">
     <!-- Utilities -->
 
+    <link rel="import"
+          href="/src/sketching/sketchSurfaceManagerInclude.html">
+
     <!-- Srl library -->
     <link rel="import" href="/src/sketching/srl/srlLibraryInclude.html">
 
@@ -16,44 +19,56 @@
     <!-- input -->
     <link rel="import" href="/src/utilities/libraries/touchy/touchyInclude.html">
 
-    <!-- sketch surface -->
-    <link id="sketchSurfaceImport" rel="import"
-        href="/src/sketching/sketchSurface.html">
-
     <!-- Sketch Storage -->
     <link rel="import"
         href="/src/sketching/storage/sketchStorageInclude.html">
 
     <meta charset="UTF-8">
-<script>
-    (function(importDoc) {
-        $(document).ready(function() {
-            require('SketchSurface', function (SketchSurface) {
+</head>
+<body>
+    <template id="sketch-surface-template">
+        <style>
+            @import "/src/sketching/sketchSurface.css";
+        </style>
+        <div>
+            <canvas id="drawingCanvas"></canvas>
+        </div>
+    </template>
+    <script>
+        (function(importDoc) {
+            $(document).ready(function() {
 
-                var link = importDoc.querySelector('#sketchSurfaceImport');
-                var template = link.import.querySelector('template');
-                var clone = document.importNode(template.content, true);
+                require.config({
+                    paths: {
+                        SketchSurface: '/src/sketching/SketchSurface'
+                    }
+                });
 
-                var newElement = new SketchSurface();
+                require(['SketchSurface'], function (SketchSurface) {
 
-                SketchSurface.prototype.createdCallback = function () {
-                    this.initializeElement(clone.cloneNode(true));
-                };
+                    var template = importDoc.querySelector('template');
+                    var clone = document.importNode(template.content, true);
 
-                SketchSurface.prototype.attachedCallback = function () {
-                    this.initializeSurface();
-                };
+                    var newElement = new SketchSurface();
 
-                SketchSurface.prototype.detachedCallback = function () {
-                    this.finalize();
-                };
+                    SketchSurface.prototype.createdCallback = function () {
+                        this.initializeElement(clone.cloneNode(true));
+                    };
 
-                document.registerElement('sketch-surface', {
-                    prototype: newElement
+                    SketchSurface.prototype.attachedCallback = function () {
+                        this.initializeSurface();
+                    };
+
+                    SketchSurface.prototype.detachedCallback = function () {
+                        this.finalize();
+                    };
+
+                    document.registerElement('sketch-surface', {
+                        prototype: newElement
+                    });
                 });
             });
-        });
-    })(document.currentScript.ownerDocument);
-</script>
-</head>
+        })(document.currentScript.ownerDocument);
+    </script>
+</body>
 </html>

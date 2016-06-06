@@ -1,8 +1,8 @@
 define('SketchSurface', ['UpdateManager', 'protobufUtils/classCreator', 'protobufUtils/sketchProtoConverter', 'sketchLibrary/SketchLibraryException',
     'SketchGraphics', 'SketchSurfaceManager', 'sketchLibrary/SrlSketch', 'sketchLibrary/ProtoSketchFramework', 'SketchInputListener'],
-    function(UpdateManagerModule, ClassUtils, ProtoUtil, SketchException, Graphics, SketchSurfaceManager, SrlSketch, ProtoFramework, InputListener) {
-        var CommandUtil = ProtoUtil.commands;
-        var Commands = ProtoFramework.Commands;
+function(UpdateManagerModule, ClassUtils, ProtoUtil, SketchException, Graphics, SketchSurfaceManager, SrlSketch, ProtoFramework, InputListener) {
+    var CommandUtil = ProtoUtil.commands;
+    var Commands = ProtoFramework.Commands;
 
     /**
      * The Sketch Surface is actually used as part of an element. But can be used
@@ -253,7 +253,7 @@ define('SketchSurface', ['UpdateManager', 'protobufUtils/classCreator', 'protobu
          * This currently is only allowed on read-only canvases.
          */
         this.fillCanvas = function () {
-            if (ClassUtils.isUndefined(this.dataset) || isUndefined(this.dataset.readonly)) {
+            if (ClassUtils.isUndefined(this.dataset) || ClassUtils.isUndefined(this.dataset.readonly)) {
                 throw new SketchException('This can only be performed on read only sketch surfaces');
             }
         };
@@ -286,19 +286,19 @@ define('SketchSurface', ['UpdateManager', 'protobufUtils/classCreator', 'protobu
         this.initializeSketch();
         this.initializeGraphics();
 
-        if (ClassUtils.isUndefined(this.dataset) || isUndefined(this.dataset.readonly)) {
+        if (ClassUtils.isUndefined(this.dataset) || ClassUtils.isUndefined(this.dataset.readonly)) {
             this.initializeInput(InputListenerClass);
         }
 
-        if (ClassUtils.isUndefined(this.dataset) || isUndefined(this.dataset.customid) || isUndefined(this.id) || this.id === null || this.id === '') {
+        if (ClassUtils.isUndefined(this.dataset) || ClassUtils.isUndefined(this.dataset.customid) || ClassUtils.isUndefined(this.id) || this.id === null || this.id === '') {
             this.id = ClassUtils.generateUuid();
         }
 
-        if (ClassUtils.isUndefined(this.dataset) || isUndefined(this.dataset.existingManager)) {
+        if (ClassUtils.isUndefined(this.dataset) || ClassUtils.isUndefined(this.dataset.existingManager)) {
             this.bindToUpdateManager(UpdateManagerClass);
         }
 
-        if (ClassUtils.isUndefined(this.dataset) || (ClassUtils.isUndefined(this.dataset.existinglist) && isUndefined(this.dataset.customid))) {
+        if (ClassUtils.isUndefined(this.dataset) || (ClassUtils.isUndefined(this.dataset.existinglist) && ClassUtils.isUndefined(this.dataset.customid))) {
             this.createSketchUpdate();
         }
 
@@ -308,10 +308,6 @@ define('SketchSurface', ['UpdateManager', 'protobufUtils/classCreator', 'protobu
         window.addEventListener('load', function () {
             this.resizeSurface();
         }.bind(this));
-
-
     };
-
-        return SketchSurface;
-
+    return SketchSurface;
 });

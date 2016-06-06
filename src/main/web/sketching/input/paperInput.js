@@ -1,5 +1,5 @@
 define('SketchInputListener', ['paperjs', 'generated_proto/commands', 'sketchLibrary/SrlStroke',
-    'sketchLibrary/SrlPoint', 'protobfUtils/classCreator'],
+    'sketchLibrary/SrlPoint', 'protobufUtils/classCreator'],
 function (paperjs, ProtoCommands, SrlStroke, SrlPoint, ClassUtils) {
     var Key = paperjs.Key;
 

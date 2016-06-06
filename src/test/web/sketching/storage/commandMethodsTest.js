@@ -314,7 +314,6 @@ require(['DefaultSketchCommands', 'generated_proto/commands',
                     var command = CommandUtil.createBaseCommand(Commands.CommandType.MARKER, false);
                     var spy = sinon.spy();
                     Commands.SrlCommand.addRedoMethod(Commands.CommandType.MARKER, spy);
-                    Commands.SrlCommand.addRedoMethod(Commands.CommandType.MARKER, spy);
                     command.redo();
                     expect(spy).to.be.calledOnce;
                 });
@@ -326,43 +325,7 @@ require(['DefaultSketchCommands', 'generated_proto/commands',
                     command.undo();
                     expect(spy).to.be.calledOnce;
                 });
-
             });
         });
         mocha.run();
     });
-
-/*
-
-
- QUnit.module("SrlCommand Redo/Undo", {
- teardown : function() {
- try {
- Commands.SrlCommand().removeRedoMethod(Commands.CommandType.MARKER);
- } catch (exception) {
- }
- try {
- Commands.SrlCommand().removeUndoMethod(Commands.CommandType.MARKER);
- } catch (exception) {
- }
- // clean up after each test
- }
- });
- it("tests that calling redo on a command works", function() {
- var command = CommandUtil.createBaseCommand(Commands.CommandType.MARKER, false);
- var spy = sinon.spy();
- Commands.SrlCommand().addRedoMethod(Commands.CommandType.MARKER, spy);
- command.redo();
- ok(spy.calledOnce);
- });
-
- it("tests that calling undo on a command works", function() {
- var command = CommandUtil.createBaseCommand(Commands.CommandType.MARKER, false);
- var spy = sinon.spy();
- Commands.SrlCommand().addUndoMethod(Commands.CommandType.MARKER, spy);
- command.undo();
- ok(spy.calledOnce);
- });
-
-
- */
