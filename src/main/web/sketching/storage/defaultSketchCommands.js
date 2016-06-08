@@ -86,7 +86,7 @@ function(CommandException, ProtoCommands, ProtoSketchUtil, ProtoUtil, ClassUtils
             var stroke = ProtoUtil.decode(this.commandData, SrlStroke);
             this.decodedData = SrlStroke.createFromProtobuf(stroke);
         }
-        this.getLocalSketchSurface().addObject(this.decodedData);
+        this.getLocalSketchSurface().add(this.decodedData);
         return true;
     });
 
@@ -116,7 +116,7 @@ function(CommandException, ProtoCommands, ProtoSketchUtil, ProtoUtil, ClassUtils
             var shape = ProtoUtil.decode(this.commandData, SrlShape);
             this.decodedData = SrlShape.createFromProtobuf(shape);
         }
-        this.getLocalSketchSurface().addObject(this.decodedData);
+        this.getLocalSketchSurface().add(this.decodedData);
         return false;
     });
 
@@ -132,7 +132,7 @@ function(CommandException, ProtoCommands, ProtoSketchUtil, ProtoUtil, ClassUtils
             this.decodedData = SrlShape.createFromProtobuf(shape);
         }
         this.getLocalSketchSurface().removeSubObjectById(this.decodedData.getId());
-        this.getLocalSketchSurface().addObject(this.decodedData);
+        this.getLocalSketchSurface().add(this.decodedData);
         return false;
     });
 
@@ -165,7 +165,7 @@ function(CommandException, ProtoCommands, ProtoSketchUtil, ProtoUtil, ClassUtils
             var idChain = ProtoUtil.decode(this.commandData, ProtoSketchUtil.IdChain);
             this.decodedData[0] = idChain;
         }
-        this.getLocalSketchSurface().addObject(this.decodedData[1]);
+        this.getLocalSketchSurface().add(this.decodedData[1]);
         // this.decodedData[1];
         return true;
     });
@@ -248,7 +248,7 @@ function(CommandException, ProtoCommands, ProtoSketchUtil, ProtoUtil, ClassUtils
             var shapeId = this.shapesToBeContained[shapeIndex];
             console.log('SHAPE BEING CONTAINED ID ', shapeId);
             var object = oldContainingObject.removeSubObjectById(shapeId);
-            newContainingObject.addSubObject(object);
+            newContainingObject.add(object);
         }
     };
 
@@ -275,11 +275,7 @@ function(CommandException, ProtoCommands, ProtoSketchUtil, ProtoUtil, ClassUtils
         for (var shapeId in this.shapesToBeContained) {
             if (this.shapesToBeContained.hasOwnProperty(shapeId)) {
                 var object = oldContainingObject.removeSubObjectById(shapeId);
-                if (newContainerId) {
-                    newContainingObject.addSubObject(object);
-                } else {
-                    newContainingObject.addObject(object);
-                }
+                newContainingObject.add(object);
             }
         }
     };

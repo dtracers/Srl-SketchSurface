@@ -106,8 +106,7 @@ function(UpdateManagerModule, ClassUtils, ProtoUtil, SketchException, Graphics, 
         function addStrokeCallback(stroke) {
 
             var command = CommandUtil.createBaseCommand(Commands.CommandType.ADD_STROKE, true);
-            var protoStroke = stroke.sendToProtobuf(parent);
-            command.commandData = protoStroke.toArrayBuffer();
+            command.commandData = stroke.toArrayBuffer();
             command.decodedData = stroke;
             var update = CommandUtil.createUpdateFromCommands([command]);
             this.updateManager.addUpdate(update);

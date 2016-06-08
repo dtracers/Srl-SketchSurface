@@ -138,6 +138,9 @@ function (paperjs, ProtoCommands, SrlStroke, SrlPoint, ClassUtils) {
                     ps.view.center =
                      startingCenter.subtract(ps.project.activeLayer.localToGlobal(event.point).subtract(startingPoint));
                 } else {
+                    if (ClassUtils.isUndefined(currentStroke)) {
+                        return;
+                    }
                     currentPoint = createPointFromEvent(event);
                     //currentPoint.setSpeed(pastPoint);
                     currentStroke.addPoint(currentPoint);
@@ -154,6 +157,9 @@ function (paperjs, ProtoCommands, SrlStroke, SrlPoint, ClassUtils) {
              * @param {Event} event - The event from releasing the mouse.
              */
             tool.onMouseUp = function(event) {
+                if (ClassUtils.isUndefined(currentStroke)) {
+                    return;
+                }
                 currentPoint = createPointFromEvent(event);
                 //currentPoint.setSpeed(pastPoint);
                 currentStroke.addPoint(currentPoint);
@@ -217,7 +223,7 @@ function (paperjs, ProtoCommands, SrlStroke, SrlPoint, ClassUtils) {
                 newPoint.setPressure(0.5);
             }
             newPoint.setSize(0.5/*drawingEvent.size*/);
-            newPoint.setUserCreated(true);
+            // newPoint.setUserCreated(true);
             return newPoint;
         }
     }

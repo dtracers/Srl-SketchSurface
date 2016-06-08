@@ -1,5 +1,5 @@
-define('SketchGraphics', ['paperjs', 'generated_proto/commands', 'sketchLibrary/SrlStroke', 'sketchLibrary/SrlShape'],
-function (paperjs, ProtoCommands, SrlStroke, SrlShape) {
+define('SketchGraphics', ['paperjs', 'generated_proto/commands', 'sketchLibrary/SrlStroke', 'sketchLibrary/SrlShape', 'protobufUtils/classCreator'],
+function (paperjs, ProtoCommands, SrlStroke, SrlShape, ClassUtils) {
     var Commands = ProtoCommands.protobuf.srl.commands;
     var paper = paperjs.paper;
 
