@@ -110,6 +110,7 @@ module.exports = function(grunt) {
                     var protoFiles = grunt.file.expand(inputFiles);
                     var jsFiles = grunt.file.expandMapping(protoFiles, 'bower_components/generated_proto', { flatten: true, ext: '.js' });
                     var command = '';
+                     console.log('protofiles: ', protoFiles);
                     for (var i = 0; i < protoFiles.length; i++) {
                         grunt.log.write('cimpiling protofile ' + protoFiles[i]);
                         grunt.log.write('');
@@ -119,7 +120,7 @@ module.exports = function(grunt) {
                             ' --target=amd --path=src/main/resources/protobuf > ' + jsFile + ' & ';
                     }
                     console.log(command);
-                    return command + 'echo "completed compile"';
+                    return command + 'echo "' + command + '"';
                 }
             }
         },

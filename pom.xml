@@ -188,6 +188,15 @@
                                     <outputDirectory>${basedir}/target/temp</outputDirectory>
                                     <includes>website/**/*.js</includes>
                                 </artifactItem>
+                                <artifactItem>
+                                    <groupId>com.github.dtracers</groupId>
+                                    <artifactId>SketchRecognitionFramework</artifactId>
+                                    <version>${sketchFrameworkVersion}</version>
+                                    <type>jar</type>
+                                    <overWrite>true</overWrite>
+                                    <outputDirectory>${basedir}/src/main/resources/protobuf</outputDirectory>
+                                    <includes>*.proto</includes>
+                                </artifactItem>
                             </artifactItems>
                         </configuration>
                     </execution>
