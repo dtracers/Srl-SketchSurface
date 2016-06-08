@@ -155,6 +155,7 @@
         <sourceDirectory>${basedir}/src/main/web</sourceDirectory>
         <testDirectory>${basedir}/src/test/web</testDirectory>
         <nodeVersion>v4.2.2</nodeVersion>
+        <sketchFrameworkVersion>js1.0.6</sketchFrameworkVersion>
     </properties>
 
     <reporting>
