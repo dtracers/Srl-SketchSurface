@@ -209,18 +209,6 @@ module.exports = function(grunt) {
             }
         },
         copy: {
-            proto: {
-                files: [
-                    {
-                        filter: 'isFile',
-                        expand: true,
-                        flatten: true,
-                        cwd: '../ProtoFiles/src/main/',
-                        src: [ 'proto/**/**.proto' ],
-                        dest: 'src/main/resources/other/protobuf'
-                    }
-                ]
-            },
             main: {
                 files: [
                     {
@@ -323,7 +311,6 @@ module.exports = function(grunt) {
     grunt.registerTask('install', function() {
         printTaskGroup();
         grunt.task.run([
-            'copy:proto',
             'exec:build_proto'
         ]);
     });
