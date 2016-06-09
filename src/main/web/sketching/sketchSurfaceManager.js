@@ -1,11 +1,11 @@
-define(['protobufUtils/classCreator', 'sketchLibrary/SrlSketch'], function (ClassUtils, SrlSketch) {
+define([ 'protobufUtils/classCreator', 'sketchLibrary/SrlSketch' ], function(ClassUtils, SrlSketch) {
     /**
      * This file contains all of the resources for managing sketches.
      *
      * @class
      * @param {SketchSurface} sketchSurface - The surface that is being managed.
      */
-    return function SketchSurfaceManager(sketchSurface) {
+    function SketchSurfaceManager(sketchSurface) {
         var sketchMap = new Map();
         var parentSketch = undefined;
 
@@ -19,7 +19,7 @@ define(['protobufUtils/classCreator', 'sketchLibrary/SrlSketch'], function (Clas
          *
          * @param {SrlSketch} sketch - The top level sketch.
          */
-        this.setParentSketch = function (sketch) {
+        this.setParentSketch = function(sketch) {
             parentSketch = sketch;
             if (ClassUtils.isUndefined(currentSketch)) {
                 currentSketch = sketch;
@@ -32,7 +32,7 @@ define(['protobufUtils/classCreator', 'sketchLibrary/SrlSketch'], function (Clas
          *
          * @param {UUID} id - The id of the parent sketch.
          */
-        this.setParentSketchId = function (id) {
+        this.setParentSketchId = function(id) {
             parentSketch.id = id;
             this.setSketch(parentSketch);
         };
@@ -43,7 +43,7 @@ define(['protobufUtils/classCreator', 'sketchLibrary/SrlSketch'], function (Clas
          *
          * @param {SrlSketch} sketch - The sketch that is being set.
          */
-        this.setSketch = function (sketch) {
+        this.setSketch = function(sketch) {
             if (ClassUtils.isUndefined(sketch.id)) {
                 // TODO: change to exception object
                 throw 'id must be defined to add it.';
@@ -55,7 +55,7 @@ define(['protobufUtils/classCreator', 'sketchLibrary/SrlSketch'], function (Clas
          * @param {UUID} id - The id of the sketch that is being grabbed.
          * @returns {SrlSketch} a sketch based off of its id.
          */
-        this.getSketch = function (id) {
+        this.getSketch = function(id) {
             return sketchMap.get(id);
         };
 
@@ -66,7 +66,7 @@ define(['protobufUtils/classCreator', 'sketchLibrary/SrlSketch'], function (Clas
          * @param {UUID} id - The of the new sketch.
          * @param {SrlSketch} sketchData - currently ignored.
          */
-        this.createSketch = function (id, sketchData) {
+        this.createSketch = function(id, sketchData) {
             var sketch = new SrlSketch();
             sketch.id = id;
             this.setSketch(sketch);
@@ -77,14 +77,14 @@ define(['protobufUtils/classCreator', 'sketchLibrary/SrlSketch'], function (Clas
          *
          * @param {UUID} id - the id of the sketch to take input and drawing.
          */
-        this.setCurrentSketch = function (id) {
+        this.setCurrentSketch = function(id) {
             currentSketch = this.getSketch(id);
         };
 
         /**
          * @returns {SrlSketch} The current sketch that is being used by this sketch surface.
          */
-        this.getCurrentSketch = function () {
+        this.getCurrentSketch = function() {
             return currentSketch;
         };
 
@@ -93,8 +93,9 @@ define(['protobufUtils/classCreator', 'sketchLibrary/SrlSketch'], function (Clas
          *
          * @param {UUID} id - the id of the sketch to be removed.
          */
-        this.deleteSketch = function (id) {
+        this.deleteSketch = function(id) {
             sketchMap.delete(id);
         };
     }
+    return SketchSurfaceManager;
 });

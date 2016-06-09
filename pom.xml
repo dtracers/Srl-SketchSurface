@@ -6,7 +6,7 @@
     <artifactId>WebClient</artifactId>
     <version>0.0.1-SNAPSHOT</version>
     <name>WebClient</name>
-    <packaging>pom</packaging>
+    <packaging>jar</packaging>
 
     <profiles>
         <profile>
@@ -229,8 +229,7 @@
             <plugin>
                 <groupId>com.github.eirslett</groupId>
                 <artifactId>frontend-maven-plugin</artifactId>
-                <!-- NB! Set <version> to the latest released version of frontend-maven-plugin, like in README.md -->
-                <version>0.0.26</version>
+                <version>1.0</version>
 
                 <executions>
 
@@ -272,12 +271,29 @@
                             <goal>grunt</goal>
                         </goals>
                         <configuration>
-                            <arguments>--no-color</arguments>
+                            <arguments></arguments>
                         </configuration>
                     </execution>
                 </executions>
             </plugin>
         </plugins>
+        <resources>
+            <resource>
+                <directory>${basedir}/src/main/resources/generated_proto</directory>
+                <includes>
+                    <include>*.py</include>
+                </includes>
+                <filtering>true</filtering>
+            </resource>
+            <resource>
+                <directory>${basedir}/target/</directory>
+                <includes>
+                    <include>website/**/*.js</include>
+                    <include>website/**/*.html</include>
+                    <include>website/**/*.cs</include>
+                </includes>
+            </resource>
+        </resources>
     </build>
 
     <dependencies>

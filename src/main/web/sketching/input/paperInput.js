@@ -1,6 +1,6 @@
-define('SketchInputListener', ['paperjs', 'generated_proto/commands', 'sketchLibrary/SrlStroke',
-    'sketchLibrary/SrlPoint', 'protobufUtils/classCreator'],
-function (paperjs, ProtoCommands, SrlStroke, SrlPoint, ClassUtils) {
+define('SketchInputListener', [ 'paperjs', 'generated_proto/commands', 'sketchLibrary/SrlStroke',
+    'sketchLibrary/SrlPoint', 'protobufUtils/classCreator' ],
+function(paperjs, ProtoCommands, SrlStroke, SrlPoint, ClassUtils) {
     var Key = paperjs.Key;
 
     /**
@@ -8,7 +8,7 @@ function (paperjs, ProtoCommands, SrlStroke, SrlPoint, ClassUtils) {
      *
      * @class InputListener
      */
-    return function InputListener() {
+    function InputListener() {
         /**
          * @type {SrlPoint}
          */
@@ -227,4 +227,5 @@ function (paperjs, ProtoCommands, SrlStroke, SrlPoint, ClassUtils) {
             return newPoint;
         }
     }
+    return InputListener;
 });

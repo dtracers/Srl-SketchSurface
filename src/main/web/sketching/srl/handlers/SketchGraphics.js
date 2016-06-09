@@ -1,5 +1,5 @@
-define('SketchGraphics', ['paperjs', 'generated_proto/commands', 'sketchLibrary/SrlStroke', 'sketchLibrary/SrlShape', 'protobufUtils/classCreator'],
-function (paperjs, ProtoCommands, SrlStroke, SrlShape, ClassUtils) {
+define('SketchGraphics', [ 'paperjs', 'generated_proto/commands', 'sketchLibrary/SrlStroke', 'sketchLibrary/SrlShape', 'protobufUtils/classCreator' ],
+function(paperjs, ProtoCommands, SrlStroke, SrlShape, ClassUtils) {
     var Commands = ProtoCommands.protobuf.srl.commands;
     var paper = paperjs.paper;
 
@@ -11,7 +11,7 @@ function (paperjs, ProtoCommands, SrlStroke, SrlShape, ClassUtils) {
      * @param {Element} canvas - The canvas element that is being drawn to.
      * @param {SketchSurfaceManager} sketchManager - The manager that handles which sketch is currently active.
      */
-    return function Graphics(canvas, sketchManager) {
+    function Graphics(canvas, sketchManager) {
         paper.install(window);
 
         /**
@@ -117,7 +117,10 @@ function (paperjs, ProtoCommands, SrlStroke, SrlShape, ClassUtils) {
         };
 
         /**
-         * @param {Array<SrlObject>} objectList
+         * Recursively loads the sketch for drawing.
+         *
+         * @param {Array<SrlObject>} objectList - The list of objects that are being loaded by this sketch.
+         * @param {String} color - The color of the element that is being drawn.
          */
         function recursivelyLoadSketch(objectList, color) {
             for (var i = 0; i < objectList.length; i++) {
@@ -147,6 +150,7 @@ function (paperjs, ProtoCommands, SrlStroke, SrlShape, ClassUtils) {
          * Draws a single stroke onto the screen.
          *
          * @param {SrlStroke} stroke - The stroke to be drawn.
+         * @param {String} color - The color of the element that is being drawn.
          */
         function loadStroke(stroke, color) {
             ps.activate();
@@ -169,7 +173,7 @@ function (paperjs, ProtoCommands, SrlStroke, SrlShape, ClassUtils) {
         /**
          * Draws a single stroke onto the screen.
          *
-         * @param {SrlStroke} stroke - The stroke to be drawn.
+         * @param {SrlStroke} shape - The shape to be drawn in color.
          */
         function loadShape(shape) {
             // make all shapes red!
@@ -243,4 +247,5 @@ function (paperjs, ProtoCommands, SrlStroke, SrlShape, ClassUtils) {
             ps = undefined;
         };
     }
+    return Graphics;
 });

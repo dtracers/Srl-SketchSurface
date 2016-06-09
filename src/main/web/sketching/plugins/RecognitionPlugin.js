@@ -1,11 +1,14 @@
 /**
  * Created by David Windows on 5/13/2016.
  */
-define("RecognitionPlugin", [], function () {
+define('RecognitionPlugin', [], function() {
     /**
      * A plugin used to send updates to the server.
      *
      * @class RecognitionPlugin
+     * @param {UpdateManager} updateManager - The manager of the update that results are added to.
+     * @param {UUID} sketchId - The id of the sketch that this recognition plugin is being created for.
+     * @param {RecognitionManager} recognitionManager - Where the updates get submitted for recognition.
      */
     function RecognitionPlugin(updateManager, sketchId, recognitionManager) {
 
@@ -19,8 +22,8 @@ define("RecognitionPlugin", [], function () {
         /**
          * @returns {String} The plugin id of this plugin.
          */
-        this.getPluginId = function () {
-          return pluginId;
+        this.getPluginId = function() {
+            return pluginId;
         };
 
         /**
@@ -34,7 +37,10 @@ define("RecognitionPlugin", [], function () {
          * Called when the {@link UpdateManager} adds an update.
          *
          * @param {SrlUpdate} update - The update to be sent to thee recognition server.
-         * @param {Boolean} toRemote - True if this update is destined to the remote server.
+         * @param {Boolean} redraw - True if this update is needing to redraw the surface
+         * @param {Number} updateIndex - The index of the update.
+         * @param {Number} updateType - The type of the update.
+         * @param {String} updatePluginId - The id of the plugin that created this specific update.
          */
         this.addUpdate = function(update, redraw, updateIndex, updateType, updatePluginId) {
             console.log('adding update!');
@@ -61,9 +67,10 @@ define("RecognitionPlugin", [], function () {
     /**
      * Creates a recognition plugin for this specific recognition manager and sketchId.
      *
-     * @param {UpdateManager} updateManager The manager of the update that results are added to.
-     * @param {UUID} sketchId The id of the sketch that this recognition plugin is being created for.
-     * @returns {RecognitionPlugin}
+     * @param {UpdateManager} updateManager - The manager of the update that results are added to.
+     * @param {UUID} sketchId - The id of the sketch that this recognition plugin is being created for.
+     * @param {RecognitionManager} recognitionManager - Where the updates get submitted for recognition.
+     * @returns {RecognitionPlugin} An instance of the recognition plugin.
      */
     return function createRecognitionPlugin(updateManager, sketchId, recognitionManager) {
         return new RecognitionPlugin(updateManager, sketchId, recognitionManager);

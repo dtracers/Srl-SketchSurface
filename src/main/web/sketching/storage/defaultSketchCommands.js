@@ -5,9 +5,9 @@
  *
  * @overview This file holds the redo and undo methods for the default sketch command.
  ******************************************************************************/
-define('DefaultSketchCommands', ['BaseCommands', 'generated_proto/commands', 'generated_proto/sketchUtil', 'protobufUtils/sketchProtoConverter',
+define('DefaultSketchCommands', [ 'BaseCommands', 'generated_proto/commands', 'generated_proto/sketchUtil', 'protobufUtils/sketchProtoConverter',
     'protobufUtils/classCreator',
-    'sketchLibrary/SrlStroke', 'sketchLibrary/SrlShape'],
+    'sketchLibrary/SrlStroke', 'sketchLibrary/SrlShape' ],
 function(CommandException, ProtoCommands, ProtoSketchUtil, ProtoUtil, ClassUtils, SrlStroke, SrlShape) {
     var Commands = ProtoCommands.protobuf.srl.commands;
     var SketchUtil = ProtoSketchUtil.protobuf.srl.utils;
@@ -245,8 +245,7 @@ function(CommandException, ProtoCommands, ProtoSketchUtil, ProtoUtil, ClassUtils
             return;
         }
         for (var shapeIndex = 0; shapeIndex < this.shapesToBeContained.length; shapeIndex++) {
-            var shapeId = this.shapesToBeContained[shapeIndex];
-            console.log('SHAPE BEING CONTAINED ID ', shapeId);
+            var shapeId = this.shapesToBeContained[ shapeIndex ];
             var object = oldContainingObject.removeSubObjectById(shapeId);
             newContainingObject.add(object);
         }
@@ -262,10 +261,6 @@ function(CommandException, ProtoCommands, ProtoSketchUtil, ProtoUtil, ClassUtils
     Commands.ActionPackageShape.prototype.undo = function(sketch) {
         var oldContainingObject = !(this.newContainerId) ? sketch : sketch.getSubObjectByIdChain(this.newContainerId.getIdChain());
         var newContainingObject = !(this.oldContainerId) ? sketch : sketch.getSubObjectByIdChain(this.oldContainerId.getIdChain());
-
-        if (!!this.newContainerId) {
-            console.log('NEW CONTAINER ID ID ID ID ', this.newContainerId.getIdChain());
-        }
 
         if (oldContainingObject === newContainingObject) {
             // done moving to same place.

@@ -1,5 +1,6 @@
-define('SketchSurface', ['UpdateManager', 'protobufUtils/classCreator', 'protobufUtils/sketchProtoConverter', 'sketchLibrary/SketchLibraryException',
-    'SketchGraphics', 'SketchSurfaceManager', 'sketchLibrary/SrlSketch', 'sketchLibrary/ProtoSketchFramework', 'SketchInputListener'],
+/*jshint maxparams: 10 */
+define('SketchSurface', [ 'UpdateManager', 'protobufUtils/classCreator', 'protobufUtils/sketchProtoConverter', 'sketchLibrary/SketchLibraryException',
+    'SketchGraphics', 'SketchSurfaceManager', 'sketchLibrary/SrlSketch', 'sketchLibrary/ProtoSketchFramework', 'SketchInputListener' ],
 function(UpdateManagerModule, ClassUtils, ProtoUtil, SketchException, Graphics, SketchSurfaceManager, SrlSketch, ProtoFramework, InputListener) {
     var CommandUtil = ProtoUtil.commands;
     var Commands = ProtoFramework.Commands;
@@ -30,7 +31,7 @@ function(UpdateManagerModule, ClassUtils, ProtoUtil, SketchException, Graphics, 
         /**
          * Does some manual GC. TODO: unlink some circles manually.
          */
-        this.finalize = function () {
+        this.finalize = function() {
             this.updateManager.clearUpdates(false, true);
             this.updateManager = undefined;
             this.localInputListener = undefined;
@@ -44,13 +45,13 @@ function(UpdateManagerModule, ClassUtils, ProtoUtil, SketchException, Graphics, 
          * Creates a sketch update in the update list if it is empty so the update
          * list knows what Id to assign to subsequent events.
          */
-        this.createSketchUpdate = function () {
+        this.createSketchUpdate = function() {
             if (ClassUtils.isUndefined(this.id)) {
                 this.id = ClassUtils.generateUuid();
             }
             if (!ClassUtils.isUndefined(this.updateManager) && this.updateManager.getListLength() <= 0) {
-                var command = CommandUtil.createNewSketch(this.id);
-                var update = CommandUtil.createUpdateFromCommands([command]);
+                var command = CommandUtil.createNewSketch(this.id, -1, -1, -1, -1);
+                var update = CommandUtil.createUpdateFromCommands([ command ]);
                 this.updateManager.addUpdate(update);
             }
         };
@@ -60,14 +61,14 @@ function(UpdateManagerModule, ClassUtils, ProtoUtil, SketchException, Graphics, 
          *
          * @param {Function} error - callback for when an error occurs.
          */
-        this.setErrorListener = function (error) {
+        this.setErrorListener = function(error) {
             this.errorListener = error;
         };
 
         /**
          * @returns {SrlSketch} The sketch object used by this sketch surface.
          */
-        this.getCurrentSketch = function () {
+        this.getCurrentSketch = function() {
             return this.sketchManager.getCurrentSketch();
         };
 
@@ -78,7 +79,7 @@ function(UpdateManagerModule, ClassUtils, ProtoUtil, SketchException, Graphics, 
          * Or a update manager class that is then constructed.
          * You can only bind an update list to a sketch once.
          */
-        this.bindToUpdateManager = function (UpdateManagerClass) {
+        this.bindToUpdateManager = function(UpdateManagerClass) {
             if (this.bindUpdateListCalled === false) {
                 this.updateManager = undefined;
             }
@@ -108,19 +109,19 @@ function(UpdateManagerModule, ClassUtils, ProtoUtil, SketchException, Graphics, 
             var command = CommandUtil.createBaseCommand(Commands.CommandType.ADD_STROKE, true);
             command.commandData = stroke.toArrayBuffer();
             command.decodedData = stroke;
-            var update = CommandUtil.createUpdateFromCommands([command]);
+            var update = CommandUtil.createUpdateFromCommands([ command ]);
             this.updateManager.addUpdate(update);
         }
 
         /**
-         * @param {InputListenerClass} InputListener - A class that represents an input listener.
+         * @param {InputListener} InputListenerClass - A class that represents an input listener.
          */
-        this.initializeInput = function (InputListenerClass) {
-            var inputClass = InputListenerClass
+        this.initializeInput = function(InputListenerClass) {
+            var InputClass = InputListenerClass;
             if (ClassUtils.isUndefined(InputListenerClass)) {
-                inputClass = InputListener;
+                InputClass = InputListener;
             }
-            this.localInputListener = new inputClass();
+            this.localInputListener = new InputClass();
 
             this.localInputListener.initializeCanvas(this, addStrokeCallback.bind(this), this.graphics);
 
@@ -132,7 +133,7 @@ function(UpdateManagerModule, ClassUtils, ProtoUtil, SketchException, Graphics, 
         /**
          * Resize the canvas so that its dimensions are the same as the css dimensions.  (this makes it a 1-1 ratio).
          */
-        this.resizeSurface = function () {
+        this.resizeSurface = function() {
             this.sketchCanvas.height = $(this.sketchCanvas).height();
             this.sketchCanvas.width = $(this.sketchCanvas).width();
         };
@@ -140,8 +141,8 @@ function(UpdateManagerModule, ClassUtils, ProtoUtil, SketchException, Graphics, 
         /**
          * Binds a function that resizes the surface every time the size of the window changes.
          */
-        this.makeResizeable = function () {
-            $(window).resize(function () {
+        this.makeResizeable = function() {
+            $(window).resize(function() {
                 this.resizeSurface();
                 this.graphics.correctSize();
             }.bind(this));
@@ -150,7 +151,7 @@ function(UpdateManagerModule, ClassUtils, ProtoUtil, SketchException, Graphics, 
         /**
          * Initializes the sketch and resets all values.
          */
-        this.initializeSketch = function () {
+        this.initializeSketch = function() {
             this.sketchManager = new SketchSurfaceManager(this);
             this.updateManager = undefined;
             bindUpdateListCalled = false;
@@ -161,35 +162,35 @@ function(UpdateManagerModule, ClassUtils, ProtoUtil, SketchException, Graphics, 
         /**
          * Initializes the graphics for the sketch surface.
          */
-        this.initializeGraphics = function () {
+        this.initializeGraphics = function() {
             this.graphics = new Graphics(this.sketchCanvas, this.sketchManager);
         };
 
         /**
          * Returns the element that listens to the input events.
          */
-        this.getElementForEvents = function () {
+        this.getElementForEvents = function() {
             return this.eventListenerElement;
         };
 
         /**
          * @returns {Element} The element where the sketch is drawn to.
          */
-        this.getElementForDrawing = function () {
+        this.getElementForDrawing = function() {
             return this.sketchCanvas;
         };
 
         /**
          * @returns {SrlUpdateList} The update list of the element.
          */
-        this.getUpdateList = function () {
+        this.getUpdateList = function() {
             return this.updateManager.getUpdateList();
         };
 
         /**
          * @returns {UpdateManager} Returns the manager for this sketch surface.
          */
-        this.getUpdateManager = function () {
+        this.getUpdateManager = function() {
             return this.updateManager;
         };
 
@@ -198,7 +199,7 @@ function(UpdateManagerModule, ClassUtils, ProtoUtil, SketchException, Graphics, 
          *
          * @return {SrlUpdateList} proto object.
          */
-        this.getSrlUpdateListProto = function () {
+        this.getSrlUpdateListProto = function() {
             var updateProto = CourseSketch.prutil.SrlUpdateList();
             updateProto.list = this.updateManager.getUpdateList();
             return ProtoUtil.decode(updateProto.toArrayBuffer(), Commands.SrlUpdateList);
@@ -207,7 +208,7 @@ function(UpdateManagerModule, ClassUtils, ProtoUtil, SketchException, Graphics, 
         /**
          * Redraws the sketch so it is visible on the screen.
          */
-        this.refreshSketch = function () {
+        this.refreshSketch = function() {
             this.graphics.loadSketch();
         };
 
@@ -216,7 +217,7 @@ function(UpdateManagerModule, ClassUtils, ProtoUtil, SketchException, Graphics, 
          *
          * @param {SrlUpdateList} updateList - The update list from which the id is being extracted.
          */
-        this.extractIdFromList = function (updateList) {
+        this.extractIdFromList = function(updateList) {
             var update = updateList[0];
             if (!ClassUtils.isUndefined(update)) {
                 var firstCommand = update.commands[0];
@@ -237,7 +238,7 @@ function(UpdateManagerModule, ClassUtils, ProtoUtil, SketchException, Graphics, 
          * @param {PercentBar} percentBar - The object that is used to update how much of the sketch is updated.
          * @param {Function} finishedCallback - called when the sketch is done loading.
          */
-        this.loadUpdateList = function (updateList, percentBar, finishedCallback) {
+        this.loadUpdateList = function(updateList, percentBar, finishedCallback) {
             try {
                 this.extractIdFromList(updateList);
             } catch (exception) {
@@ -251,7 +252,7 @@ function(UpdateManagerModule, ClassUtils, ProtoUtil, SketchException, Graphics, 
          * Tells the sketch surface to fill the screen so it is completely visible.
          * This currently is only allowed on read-only canvases.
          */
-        this.fillCanvas = function () {
+        this.fillCanvas = function() {
             if (ClassUtils.isUndefined(this.dataset) || ClassUtils.isUndefined(this.dataset.readonly)) {
                 throw new SketchException('This can only be performed on read only sketch surfaces');
             }
@@ -264,7 +265,7 @@ function(UpdateManagerModule, ClassUtils, ProtoUtil, SketchException, Graphics, 
      * @param {Element} templateClone - An element representing the data inside tag, its content
      *            has already been imported and then added to this element.
      */
-    SketchSurface.prototype.initializeElement = function (templateClone) {
+    SketchSurface.prototype.initializeElement = function(templateClone) {
         var root = this.createShadowRoot();
         root.appendChild(templateClone);
         this.shadowRoot = this;
@@ -280,7 +281,7 @@ function(UpdateManagerModule, ClassUtils, ProtoUtil, SketchException, Graphics, 
      * @param {InputListener} InputListenerClass - The class used to listen for input.
      * @param {UpdateManager} UpdateManagerClass - The class used to manage updates to the sketch.
      */
-    SketchSurface.prototype.initializeSurface = function (InputListenerClass, UpdateManagerClass) {
+    SketchSurface.prototype.initializeSurface = function(InputListenerClass, UpdateManagerClass) {
         /*jshint maxcomplexity:13 */
         this.initializeSketch();
         this.initializeGraphics();
@@ -289,7 +290,8 @@ function(UpdateManagerModule, ClassUtils, ProtoUtil, SketchException, Graphics, 
             this.initializeInput(InputListenerClass);
         }
 
-        if (ClassUtils.isUndefined(this.dataset) || ClassUtils.isUndefined(this.dataset.customid) || ClassUtils.isUndefined(this.id) || this.id === null || this.id === '') {
+        if (ClassUtils.isUndefined(this.dataset) || ClassUtils.isUndefined(this.dataset.customid) ||
+                ClassUtils.isUndefined(this.id) || this.id === null || this.id === '') {
             this.id = ClassUtils.generateUuid();
         }
 
@@ -297,14 +299,15 @@ function(UpdateManagerModule, ClassUtils, ProtoUtil, SketchException, Graphics, 
             this.bindToUpdateManager(UpdateManagerClass);
         }
 
-        if (ClassUtils.isUndefined(this.dataset) || (ClassUtils.isUndefined(this.dataset.existinglist) && ClassUtils.isUndefined(this.dataset.customid))) {
+        if (ClassUtils.isUndefined(this.dataset) || (ClassUtils.isUndefined(this.dataset.existinglist) &&
+                ClassUtils.isUndefined(this.dataset.customid))) {
             this.createSketchUpdate();
         }
 
         if (!ClassUtils.isUndefined(this.dataset) && !(ClassUtils.isUndefined(this.dataset.autoresize))) {
             this.makeResizeable();
         }
-        window.addEventListener('load', function () {
+        window.addEventListener('load', function() {
             this.resizeSurface();
         }.bind(this));
     };

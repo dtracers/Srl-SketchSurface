@@ -44,22 +44,22 @@
                     }
                 });
 
-                require(['SketchSurface'], function (SketchSurface) {
+                require([ 'SketchSurface' ], function(SketchSurface) {
 
                     var template = importDoc.querySelector('template');
                     var clone = document.importNode(template.content, true);
 
                     var newElement = new SketchSurface();
 
-                    SketchSurface.prototype.createdCallback = function () {
+                    SketchSurface.prototype.createdCallback = function() {
                         this.initializeElement(clone.cloneNode(true));
                     };
 
-                    SketchSurface.prototype.attachedCallback = function () {
+                    SketchSurface.prototype.attachedCallback = function() {
                         this.initializeSurface();
                     };
 
-                    SketchSurface.prototype.detachedCallback = function () {
+                    SketchSurface.prototype.detachedCallback = function() {
                         this.finalize();
                     };
 

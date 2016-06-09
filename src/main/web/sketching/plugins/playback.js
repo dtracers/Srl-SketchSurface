@@ -49,13 +49,15 @@ function Playback(updateList, updateManager, graphics) {
     var pointList;
 
     /**
-     * Adds an update that is played back slowly.
+     * Called when the {@link UpdateManager} adds an update.
      *
-     * @param {SrlUpdate} update - The update that the sketch list is currently replaying
-     * @param {Boolean} redraw - True if the sketch surface needs to be redrawn.
-     * @param {Integer} updateIndex - The index that this update is in the update list.
+     * @param {SrlUpdate} update - The update to be sent to thee recognition server.
+     * @param {Boolean} redraw - True if this update is needing to redraw the surface
+     * @param {Number} updateIndex - The index of the update.
+     * @param {Number} updateType - The type of the update.
+     * @param {String} updatePluginId - The id of the plugin that created this specific update.
      */
-    this.addUpdate = function addUpdate(update, redraw, updateIndex, updateType, updatePluginId) {
+    this.addUpdate = function(update, redraw, updateIndex, updateType, updatePluginId) {
         var commandList = update.commands;
 
         /**

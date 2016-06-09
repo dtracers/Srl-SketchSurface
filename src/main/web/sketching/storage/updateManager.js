@@ -1,5 +1,5 @@
-define('UpdateManager', ['DefaultSketchCommands', 'generated_proto/commands', 'generated_proto/sketchUtil',
-    'protobufUtils/classCreator', 'protobufUtils/sketchProtoConverter', 'sketchLibrary/SketchLibraryException', 'sketchLibrary/ArrayUtils'],
+define('UpdateManager', [ 'DefaultSketchCommands', 'generated_proto/commands', 'generated_proto/sketchUtil',
+    'protobufUtils/classCreator', 'protobufUtils/sketchProtoConverter', 'sketchLibrary/SketchLibraryException', 'sketchLibrary/ArrayUtils' ],
 function(DefaultCommands, ProtoCommands, ProtoSketchUtil, ClassUtils, ProtoUtil, SketchException, ArrayUtils) {
     var Commands = ProtoCommands.protobuf.srl.commands;
     var SketchUtil = ProtoSketchUtil.protobuf.srl.utils;
@@ -126,7 +126,7 @@ function(DefaultCommands, ProtoCommands, ProtoSketchUtil, ClassUtils, ProtoUtil,
          *            update manager.
          * @param {String} [pluginId] - The id of the plugin that added the update.
          */
-        this.addUpdate = function (update, pluginId) {
+        this.addUpdate = function(update, pluginId) {
             // TODO: find a better way to manage cleaning updates if possible.
             var cleanedUpdate = cleanUpdate(update);
             cleanedUpdate.sketchManager = sketchManager;
@@ -145,7 +145,7 @@ function(DefaultCommands, ProtoCommands, ProtoSketchUtil, ClassUtils, ProtoUtil,
          *            update manager.
          * @param {String} [pluginId] - The id of the plugin that added the update.
          */
-        this.addSynchronousUpdate = function (update, pluginId) {
+        this.addSynchronousUpdate = function(update, pluginId) {
             var cleanedUpdate = cleanUpdate(update);
             cleanedUpdate.sketchManager = sketchManager;
             cleanedUpdate.pluginId = pluginId;
@@ -165,7 +165,7 @@ function(DefaultCommands, ProtoCommands, ProtoSketchUtil, ClassUtils, ProtoUtil,
          * @callbackParam {Integer} updateType - The last update type
          * @callbackParam {String} pluginId - The id of the plugin that added this update. (Undefined if no plugin added the update)
          */
-        this.addPlugin = function (plugin) {
+        this.addPlugin = function(plugin) {
             plugins.push(plugin);
         };
 
@@ -286,12 +286,12 @@ function(DefaultCommands, ProtoCommands, ProtoSketchUtil, ClassUtils, ProtoUtil,
             if (queuedLocalUpdates.length > 0) {
                 if (!executionLock) {
                     executeUpdateLocked();
-                    setTimeout(function () {
+                    setTimeout(function() {
                         emptyLocalQueue();
                     }, 10);
                 } else {
                     // We wait and try again when the executionLock is gone
-                    setTimeout(function () {
+                    setTimeout(function() {
                         emptyLocalQueue();
                     }, 10);
                 }
@@ -353,13 +353,13 @@ function(DefaultCommands, ProtoCommands, ProtoSketchUtil, ClassUtils, ProtoUtil,
                     // [unreachable update]
                     var startingMarker = localScope.createMarker(false, Commands.Marker.MarkerType.SPLIT, '' +
                         splitDifference);
-                    updateList.splice(currentUpdateIndex, 0, CommandUtil.createUpdateFromCommands([startingMarker]));
+                    updateList.splice(currentUpdateIndex, 0, CommandUtil.createUpdateFromCommands([ startingMarker ]));
 
                     // Creates and inserts the second marker [unreachable update
                     // (probably undo or redo)] -> [marker] -> [index out of range]
                     var endingMarker = localScope.createMarker(false, Commands.Marker.MarkerType.SPLIT, '' +
                         (0 - splitDifference));
-                    updateList.push(CommandUtil.createUpdateFromCommands([endingMarker]));
+                    updateList.push(CommandUtil.createUpdateFromCommands([ endingMarker ]));
 
                     // Reset the information
                     inRedoUndoMode = false;
@@ -506,13 +506,13 @@ function(DefaultCommands, ProtoCommands, ProtoSketchUtil, ClassUtils, ProtoUtil,
          *
          * @param {Function} callback - Called after the list is cleaned.
          */
-        this.getCleanUpdateList = function (callback) {
+        this.getCleanUpdateList = function(callback) {
             var index = 0;
             var maxIndex = updateList.length;
             var newList = [];
             // For local scoping
             var oldList = updateList;
-            var intervalHolder = setInterval(function () {
+            var intervalHolder = setInterval(function() {
                 var startIndex = index;
                 while (index < maxIndex && startIndex - index <= 5) {
                     var update = oldList[index];
@@ -535,7 +535,7 @@ function(DefaultCommands, ProtoCommands, ProtoSketchUtil, ClassUtils, ProtoUtil,
          * @param {Number} time - The time at which the update took place.
          * @param {Number} index - Used to specify what update to update.
          */
-        this.setUpdateTime = function (time, index) {
+        this.setUpdateTime = function(time, index) {
             updateList[index].setTime(time.toString());
         };
 
@@ -544,7 +544,7 @@ function(DefaultCommands, ProtoCommands, ProtoSketchUtil, ClassUtils, ProtoUtil,
          *
          * @param {Number} time - Used to specify what update to update.
          */
-        this.setLastSaveTime = function (time) {
+        this.setLastSaveTime = function(time) {
             this.setUpdateTime(time, lastSavePointer);
         };
 
@@ -553,7 +553,7 @@ function(DefaultCommands, ProtoCommands, ProtoSketchUtil, ClassUtils, ProtoUtil,
          *
          * @param {Function} [callback] - called with the update list.
          */
-        this.getUpdateList = function (callback) {
+        this.getUpdateList = function(callback) {
             if (callback) {
                 callback(updateList);
             }
@@ -563,7 +563,7 @@ function(DefaultCommands, ProtoCommands, ProtoSketchUtil, ClassUtils, ProtoUtil,
         /**
          * @returns {Integer} The length of the current list.
          */
-        this.getListLength = function () {
+        this.getListLength = function() {
             return updateList.length;
         };
 
@@ -571,7 +571,7 @@ function(DefaultCommands, ProtoCommands, ProtoSketchUtil, ClassUtils, ProtoUtil,
          * @returns {Boolean} True IFF a submission marker is the last item that was
          *          submitted.
          */
-        this.isLastUpdateSubmission = function () {
+        this.isLastUpdateSubmission = function() {
             if (updateList.length <= 0) {
                 return false;
             }
@@ -591,7 +591,7 @@ function(DefaultCommands, ProtoCommands, ProtoSketchUtil, ClassUtils, ProtoUtil,
          * @returns {Boolean} True IFF a save marker is the last item that was
          *          submitted.
          */
-        this.isLastUpdateSave = function () {
+        this.isLastUpdateSave = function() {
             if (updateList.length <= 0) {
                 return false;
             }
@@ -611,7 +611,7 @@ function(DefaultCommands, ProtoCommands, ProtoSketchUtil, ClassUtils, ProtoUtil,
          * @returns {Boolean} The opposite of isLastUpdateSubmission, except in the
          *          case where updateList.length() is non-positive.
          */
-        this.isValidForSubmission = function () {
+        this.isValidForSubmission = function() {
             if (updateList.length <= 0) {
                 return false;
             }
@@ -621,7 +621,7 @@ function(DefaultCommands, ProtoCommands, ProtoSketchUtil, ClassUtils, ProtoUtil,
         /**
          * @returns {Boolean} True if the last update is not a submission and the last update is not a save marker.
          */
-        this.isValidForSaving = function () {
+        this.isValidForSaving = function() {
             if (updateList.length <= 0) {
                 return false;
             }
@@ -631,7 +631,7 @@ function(DefaultCommands, ProtoCommands, ProtoSketchUtil, ClassUtils, ProtoUtil,
         /**
          * @returns {Number} The current update index.
          */
-        this.getCurrentPointer = function () {
+        this.getCurrentPointer = function() {
             return currentUpdateIndex;
         };
 
@@ -642,7 +642,7 @@ function(DefaultCommands, ProtoCommands, ProtoSketchUtil, ClassUtils, ProtoUtil,
          * @param {Object} percentBar - The bar that will show these updates. It is called with how much is left to be completed.
          * @param {Function} finishedCallback - Called when the update list is set and executed.
          */
-        this.setUpdateList = function (list, percentBar, finishedCallback) {
+        this.setUpdateList = function(list, percentBar, finishedCallback) {
             if (!Array.isArray(list)) {
                 throw new UpdateException('Input list is not an array: ' + list);
             }
@@ -651,13 +651,13 @@ function(DefaultCommands, ProtoCommands, ProtoSketchUtil, ClassUtils, ProtoUtil,
             var index = 0;
             var maxIndex = list.length;
             var numberOfUpdatesAtOnce = 2;
-            var intervalHolder = setInterval(function () {
+            var intervalHolder = setInterval(function() {
                 var startIndex = index;
                 while (index < maxIndex && index - startIndex < numberOfUpdatesAtOnce) {
                     if (percentBar) {
                         percentBar.updatePercentBar(index, maxIndex);
                     }
-                    localScope.addUpdate(list[index]);
+                    localScope.addUpdate(list[ index ]);
                     index++;
                 }
                 if (index >= maxIndex) {
@@ -681,9 +681,9 @@ function(DefaultCommands, ProtoCommands, ProtoSketchUtil, ClassUtils, ProtoUtil,
          *
          * @param {Boolean} userCreated - True if the userCreated the command false otherwise.
          */
-        this.redoAction = function (userCreated) {
+        this.redoAction = function(userCreated) {
             var redoCommand = CommandUtil.createBaseCommand(Commands.CommandType.REDO, userCreated);
-            var update = CommandUtil.createUpdateFromCommands([redoCommand]);
+            var update = CommandUtil.createUpdateFromCommands([ redoCommand ]);
             this.addUpdate(update, false);
         };
 
@@ -692,9 +692,9 @@ function(DefaultCommands, ProtoCommands, ProtoSketchUtil, ClassUtils, ProtoUtil,
          *
          * @param {Boolean} userCreated - True if the userCreated the command false otherwise.
          */
-        this.undoAction = function (userCreated) {
+        this.undoAction = function(userCreated) {
             var undoCommand = CommandUtil.createBaseCommand(Commands.CommandType.UNDO, userCreated);
-            var update = CommandUtil.createUpdateFromCommands([undoCommand]);
+            var update = CommandUtil.createUpdateFromCommands([ undoCommand ]);
             var tempIndex = currentUpdateIndex;
             this.addUpdate(update, false);
         };
@@ -704,7 +704,7 @@ function(DefaultCommands, ProtoCommands, ProtoSketchUtil, ClassUtils, ProtoUtil,
          *
          * @param {SketchManager} sketch - The manager of the current sketch.
          */
-        this.setSketchManager = function (sketch) {
+        this.setSketchManager = function(sketch) {
             sketchManager = sketch;
         };
 
