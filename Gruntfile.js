@@ -13,13 +13,9 @@ module.exports = function(grunt) {
     grunt.loadNpmTasks('grunt-babel');
     grunt.loadNpmTasks('grunt-contrib-copy');
     grunt.loadNpmTasks('grunt-text-replace');
-    grunt.loadNpmTasks('grunt-wiredep');
     grunt.loadNpmTasks('grunt-contrib-uglify');
-    grunt.loadNpmTasks('grunt-webdriver');
-    grunt.loadNpmTasks('grunt-selenium-server');
     grunt.loadNpmTasks('grunt-mkdir');
     grunt.loadNpmTasks('grunt-exec');
-    grunt.loadTasks('config/gruntTasks/');
 
     var gruntOptions = {
         skipTests: (process.env.GRUNT_SKIP_TESTS || false) === 'true'
@@ -267,30 +263,6 @@ module.exports = function(grunt) {
      * TASK WORKFLOW SETUP
      ******************************************/
 
-    // sets up tasks relating to starting the server
-    grunt.registerTask('server', function() {
-        printTaskGroup();
-        grunt.task.run([
-            'seleniumStandalone:run',
-            'configureRewriteRules',
-            'connect:development'
-        ]);
-    });
-
-    // sets up tasks related to testing
-    grunt.registerTask('test', function() {
-        if (gruntOptions.skipTests) {
-            grunt.log.write('\n===========\n=========== SKIPPING UNIT TESTS ===========\n===========\n');
-            return;
-        }
-        printTaskGroup();
-        grunt.task.run([
-            'server',
-            'webdriver:unit',
-            'seleniumKill:run'
-        ]);
-    });
-
     // sets up tasks related to creating documentation
     grunt.registerTask('documentation', function() {
         printTaskGroup();
@@ -354,5 +326,5 @@ module.exports = function(grunt) {
      ******************************************/
 
     // 'test'  wait till browsers are better supported
-    grunt.registerTask('default', [ 'install', 'checkstyle', 'documentation', 'setup', 'test', 'build' ]);
+    grunt.registerTask('default', [ 'install', 'checkstyle', 'documentation', 'setup', 'build' ]);
 };
