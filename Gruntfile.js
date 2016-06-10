@@ -1,4 +1,4 @@
-//jscs:disable jsDoc
+// jscs:disable jsDoc
 
 var rewriteRulesSnippet = require('grunt-connect-rewrite/lib/utils').rewriteRequest;
 var selenium = require('selenium-standalone');
