@@ -32,11 +32,11 @@
     "barrier": "dtracers/node-barrier#v1.0.1",
     "chai": "*",
     "protobufjs": "5.0.1",
-    "grunt-exec": "0.4.6",
+    "grunt-exec": "1.0.0",
     "hooker": "0.2.3",
     "qunit": "0.9.1",
     "requirejs": "2.2.0",
-    "recursive-readdir":"2.0.0",
+    "recursive-readdir": "2.0.0",
     "node-define": "0.1.1",
     "node-amd-require": "0.2.2"
   }
