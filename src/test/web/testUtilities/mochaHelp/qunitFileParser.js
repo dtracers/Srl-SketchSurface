@@ -46,7 +46,7 @@ function getTestTime($) {
 function createPassingTest(moduleName, testName, runtime) {
     return {
         passing: true,
-        message: moduleName + ': [' + testName + '] ran in ' + runtime,
+        message: moduleName + ': [' + testName + ' ] ran in ' + runtime,
         moduleName: moduleName,
         testName: testName,
         runtime: runtime

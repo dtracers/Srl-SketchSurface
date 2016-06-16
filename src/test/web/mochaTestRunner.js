@@ -11,7 +11,7 @@ var mocha = new Mocha({
 
 var testDir = 'sketching';
 
-recursive(testDir,['*.html'], function (err, files) {
+recursive(testDir,['*.html' ], function (err, files) {
     console.log('files loaded!');
   files.forEach(function(file){
       console.log(

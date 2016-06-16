@@ -44,7 +44,7 @@ module.exports = {
             it('running test for ' + fileUrl, function (done) {
                 browser.on('error', function(e) {
                     console.log('error occured while running tests for ' + filePath, JSON.stringify(e));
-                    assert.isOk(false, 'a browser error occured when running test [' + filePath + ']\n' + JSON.stringify(e));
+                    assert.isOk(false, 'a browser error occured when running test [' + filePath + ' ]\n' + JSON.stringify(e));
                 });
 
                 this.timeout(1000 + timeout);
@@ -70,7 +70,7 @@ module.exports = {
                             stacktrace: []
                         };
                         writeStream.write(JSON.stringify(timeoutMessage, null, '    '));
-                        writeStream.write(']');
+                        writeStream.write(' ]');
                         writeStream.end();
                         assert.ok(false, '' + result);
                         done();
@@ -100,7 +100,7 @@ module.exports = {
                         stacktrace: []
                     };
                     writeStream.write(JSON.stringify(noAssertionMessage, null, '    '));
-                    writeStream.write(']');
+                    writeStream.write(' ]');
                     writeStream.end();
                     console.log('test failed!!!');
                     done();
@@ -119,7 +119,7 @@ module.exports = {
             browser.getHTML(testResults).then(function (results) {
                 qunitFileParser.parseFile(results, function (resultList) {
                     if (failedAssertions > 0) {
-                        console.log('There were at least [', failedAssertions, '] failed assertions');
+                        console.log('There were at least [', failedAssertions, ' ] failed assertions');
                         writeStream = fs.createWriteStream(output + '/' + fileName + 'on');
                         writeStream.write('// ' + filePath);
                         writeStream.write('\n[\n');
@@ -132,7 +132,7 @@ module.exports = {
                         }
                     }
                     if (failedAssertions > 0) {
-                        writeStream.write(']');
+                        writeStream.write(' ]');
                         writeStream.end();
                     }
                     for (index in resultList) {

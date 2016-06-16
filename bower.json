@@ -2,18 +2,15 @@
   "name": "coursesketchwebclient",
   "version": "0.0.1",
   "dependencies": {
-    "validate-first-run": "dtracers/validateFirstRun#0.0.4",
     "babel-polyfill" : "babel/babel#5.8.26",
     "webcomponentsjs": "webcomponents/webcomponentsjs#0.7.14",
-    "IndexedDBShim": "",
-    "stacktrace-js": "0.6.4",
+    "stacktrace-js": "stacktracejs/stacktrace.js#98574f0dfe3d831cde75772fd34e972e7b7f95f1",
     "materialize": "0.97.1",
-    "dialog-polyfill": "0.4.2",
-    "MathJax": "2.5.3",
     "paper": "v0.9.25",
     "protobufjs": "trunerd/protobuf.js#75852bda552dd221b18f0026f8ae3db18e8324b0",
     "jailed": "asvd/jailed#a840e684a3ba14cc8af61973b3e6d0d900dca097",
-    "requirejs": "2.2.0"
+    "requirejs": "2.2.0",
+    "CallbackBarrier": "dtracers/CallbackBarrier#0.0.1"
   },
   "devDependencies": {
     "blanket": "1.1.7",

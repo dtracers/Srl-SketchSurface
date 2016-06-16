@@ -7,7 +7,7 @@ try {
 }
 
 require(['DefaultSketchCommands', 'generated_proto/commands',
-        'generated_proto/sketchUtil', 'protobufUtils/classCreator', 'protobufUtils/sketchProtoConverter', 'RequireTest'],
+        'generated_proto/sketchUtil', 'protobufUtils/classCreator', 'protobufUtils/sketchProtoConverter', 'RequireTest' ],
     function (CommandException, ProtoCommands, GenericProtobuf, ClassUtils, ProtoUtil, RequireTest) {
         var expect = chai.expect;
         var Commands = ProtoCommands.protobuf.srl.commands;

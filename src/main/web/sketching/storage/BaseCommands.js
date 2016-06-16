@@ -2,12 +2,16 @@
  * Adds a couple of really useful methods to the commands. Depends on
  * {@code /src/utilities/connection/protobufInclude.html}.
  */
-define('BaseCommands', [ 'generated_proto/commands', 'generated_proto/sketchUtil', 'protobufUtils/sketchProtoConverter',
-    'protobufUtils/classCreator',
+define('BaseCommands', [ 'sketchLibrary/ProtoSketchFramework',
+        'protobufUtils/protobufUtils',
     'sketchLibrary/SketchLibraryException' ],
-function(ProtoCommands, ProtoSketchUtil, ProtoUtil, ClassUtils, SketchException) {
-    var Commands = ProtoCommands.protobuf.srl.commands;
-    var CommandUtil = ProtoUtil.commands;
+function(SketchFramework, protoUtils, SketchException) {
+
+    var ClassUtils = protoUtils.classUtils;
+    var ProtoUtil = protoUtils.converterUtils;
+    var exceptionUtils = protoUtils.exceptionUtils;
+
+    var Commands = SketchFramework.Commands;
 
     /**
      * @class CommandException

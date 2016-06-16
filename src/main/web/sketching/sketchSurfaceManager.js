@@ -59,6 +59,10 @@ define([ 'protobufUtils/classCreator', 'sketchLibrary/SrlSketch' ], function(Cla
             return sketchMap.get(id);
         };
 
+        this.hasSketch = function(id) {
+            return sketchMap.has(id);
+        };
+
         /**
          * Creates a new sketch with the given id.
          * NOTE: this does not change what the current sketch is pointed to.
@@ -67,9 +71,13 @@ define([ 'protobufUtils/classCreator', 'sketchLibrary/SrlSketch' ], function(Cla
          * @param {SrlSketch} sketchData - currently ignored.
          */
         this.createSketch = function(id, sketchData) {
+            if (this.hasSketch(id)) {
+                return this.getSketch(id);
+            }
             var sketch = new SrlSketch();
-            sketch.id = id;
+            sketch.setId(id);
             this.setSketch(sketch);
+            return sketch;
         };
 
         /**
@@ -95,6 +103,13 @@ define([ 'protobufUtils/classCreator', 'sketchLibrary/SrlSketch' ], function(Cla
          */
         this.deleteSketch = function(id) {
             sketchMap.delete(id);
+        };
+
+        /**
+         * @return {Array<String>} a list of all ids managed by this manager.
+         */
+        this.getSketchIds = function() {
+            return Array.from(sketchMap.keys());
         };
     }
     return SketchSurfaceManager;

@@ -1,0 +1,43 @@
+<html>
+<head>
+    <meta charset="UTF-8">
+    <link rel="import" href="/src/sketching/sketchInclude.html">
+    <link rel="import" href="/src/sketching/plugins/pluginInclude.html">
+</head>
+<body style="background:#FFFFFF;">
+
+<sketch-surface id="hello" style="height:1005; width:100%; border: 5px solid red;"></sketch-surface>
+<button onclick="playMe()">Play me!</button>
+
+<script>
+    var hasBeenSetup = false;
+    var playMe = undefined;
+    var playBack = undefined;
+    require(['RealTimeSketchPlayback'], function (PlaybackPlugin) {
+        function setup() {
+            if (hasBeenSetup) {
+                return;
+            }
+            var surface = document.body.querySelector("sketch-surface");
+            var plugin = PlaybackPlugin.createSketchPlaybackPlugin(surface);
+            var updateManager = surface.getUpdateManager();
+            updateManager.addPlugin(plugin);
+            playBack = plugin;
+            hasBeenSetup = true;
+        }
+        function play() {
+            setup();
+            var surface = document.body.querySelector("sketch-surface");
+            var updateList = surface.getUpdateList();
+            var copyList = [];
+            for (var i = 0; i < updateList.length; i++) {
+                copyList.push(updateList[i]);
+            }
+            playBack.initialize(copyList);
+            playBack.playNext();
+        }
+        playMe = play;
+    });
+</script>
+</body>
+</html>

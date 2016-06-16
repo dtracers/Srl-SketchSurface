@@ -112,7 +112,7 @@ module.exports = function(grunt) {
                         var jsFile = jsFiles[i].dest;
                         command+= '"./node_modules/.bin/pbjs" ' + protoFiles[i] + ' --source=proto' +
                             ' --dependency="protobufjs"' +
-                            ' --target=amd --path=src/main/resources/protobuf > ' + jsFile + ' & ';
+                            ' --target=amd --path=' + protoPath + ' > ' + jsFile + ' & ';
                     }
                     console.log(command);
                     return command + 'echo "' + command + '"';
@@ -213,6 +213,12 @@ module.exports = function(grunt) {
                         src: [ '**' ],
                         dest: 'target/website/',
                         cwd: 'src/main/web'
+                    },
+                    {
+                        // copies the website files used in production for prod use
+                        expand: true,
+                        src: [ 'doc/*' ],
+                        dest: 'target/website/'
                     }
                 ]
             },

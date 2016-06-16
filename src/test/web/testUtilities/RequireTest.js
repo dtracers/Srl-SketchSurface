@@ -1,4 +1,4 @@
-define('RequireTest', ['chai', 'mocha', 'sinon', 'sinon-chai', 'chai-protobuf'], function (chai, mocha, sinon, SinonChai, ChaiProtobuf) {
+define('RequireTest', ['chai', 'mocha', 'sinon', 'sinon-chai', 'chai-protobuf' ], function (chai, mocha, sinon, SinonChai, ChaiProtobuf) {
     console.log('chai', chai);
     console.log('mocha', mocha);
     console.log('sinon', sinon);

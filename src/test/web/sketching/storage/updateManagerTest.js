@@ -7,7 +7,7 @@ try {
 }
 
 require(['DefaultSketchCommands', 'UpdateManager', 'generated_proto/commands',
-        'generated_proto/sketchUtil', 'protobufUtils/classCreator', 'protobufUtils/sketchProtoConverter', 'SketchSurfaceManager', 'RequireTest'],
+        'generated_proto/sketchUtil', 'protobufUtils/classCreator', 'protobufUtils/sketchProtoConverter', 'SketchSurfaceManager', 'RequireTest' ],
     function (CommandException, UpdateManagerModule, ProtoCommands, GenericProtobuf, ClassUtils, ProtoUtil, SketchSurfaceManager, RequireTest) {
         var expect = chai.expect;
         var UpdateManager = UpdateManagerModule.UpdateManager;

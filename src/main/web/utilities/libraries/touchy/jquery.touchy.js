@@ -119,7 +119,7 @@
 
   var proxyHandlers = {
 
-      handleTouchStart: function (e) {
+      handleTouchStart: function(e) {
 
         var eventType = this.context,
           $target = getTarget(e, eventType);
@@ -209,7 +209,7 @@
         }
       },
 
-      handleTouchMove: function (e) {
+      handleTouchMove: function(e) {
         var eventType = this.context,
           $target = getTarget(e, eventType);
 
@@ -359,7 +359,7 @@
         }
       },
 
-      handleGestureChange: function (e) {
+      handleGestureChange: function(e) {
         var eventType = this.context,
           $target = getTarget(e, eventType);
 
@@ -417,7 +417,7 @@
         }
       },
 
-      handleTouchEnd: function (e) {
+      handleTouchEnd: function(e) {
         var eventType = this.context,
           $target = getTarget(e, eventType);
 
@@ -531,7 +531,7 @@
       /*
        * To be implemented
        *
-       handleTouchCancel: function (e) {
+       handleTouchCancel: function(e) {
        var eventType = this.context,
        $target = getTarget(e, eventType);
 
@@ -562,7 +562,7 @@
 
   // event-specific methods
 
-    updateDragData = function (data, touches, timeStamp) {
+    updateDragData = function(data, touches, timeStamp) {
       ensureSingularStartData(data, touches, timeStamp);
       var lastMoveDate = data.moveDate || data.startDate,
         moveDate = timeStamp;
@@ -589,7 +589,7 @@
       }
     },
 
-    updateSwipeData = function (data, touches, timeStamp) {
+    updateSwipeData = function(data, touches, timeStamp) {
       ensureSingularStartData(data, touches, timeStamp);
       var settings = data.settings,
           startDate = data.startDate,
@@ -617,7 +617,7 @@
       }
     },
 
-    triggerSwipe = function (data, $target) {
+    triggerSwipe = function(data, $target) {
       var movePoint = data.movePoint,
           lastMovePoint = data.lastMovePoint,
           distance = movePoint.x === lastMovePoint.x && movePoint.y === lastMovePoint.y ? 0 : Math.sqrt( Math.pow( (movePoint.x - lastMovePoint.x), 2 ) + Math.pow( (movePoint.y - lastMovePoint.y), 2 ) ),
@@ -646,7 +646,7 @@
 
   // other private methods
 
-    ensureSingularStartData = function (data, touches, timeStamp) {
+    ensureSingularStartData = function(data, touches, timeStamp) {
       if (!data.startPoint) {
         data.startPoint = {
           "x": touches[0].pageX,
@@ -658,7 +658,7 @@
       }
     },
 
-    hasGestureChange = function () {
+    hasGestureChange = function() {
       return (typeof window.ongesturechange == "object");
     },
 
@@ -701,7 +701,7 @@
 
   // get pageX and pageY of an element
   // from: http://ecmanaut.blogspot.com/2010/06/elementpagex-and-elementpagey.html
-    getViewOffset = function (node, singleFrame) {
+    getViewOffset = function(node, singleFrame) {
 
       function addOffset(node, coords, view) {
         var p = node.offsetParent;
@@ -794,10 +794,10 @@
       var capitalizedKey = key.charAt(0).toUpperCase() + key.slice(1);
 
       boundElems[key] = $([]);
-      contexts[key] = new (function () {this.context = key;})();
+      contexts[key] = new (function() {this.context = key;})();
 
       $.event.special["touchy-" + key] = {
-        setup: function (data, namespaces, eventHandle) {
+        setup: function(data, namespaces, eventHandle) {
           boundElems[key] = boundElems[key].add( this );
           $(this).data('touchy' + capitalizedKey, $.extend({}, $.touchyOptions[key].data));
           $(this).data('touchy' + capitalizedKey).settings = $.extend({}, $.touchyOptions[key]);
@@ -809,7 +809,7 @@
           }
 
         },
-        teardown: function (namespaces) {
+        teardown: function(namespaces) {
           boundElems[key] = boundElems[key].not( this );
           $(this).removeData('touchy' + capitalizedKey);
           if ( boundElems[key].length === 0 ) {
@@ -818,10 +818,10 @@
             });
           }
         },
-        add: function (handleObj) {
+        add: function(handleObj) {
           $.extend($(this).data('touchy' + capitalizedKey).settings, handleObj.data);
           var old_handler = handleObj.handler;
-          handleObj.handler = function (event) {
+          handleObj.handler = function(event) {
             return old_handler.apply(this, arguments);
           };
         }
@@ -867,7 +867,7 @@
    * the corresponding add method executes.
    *
    *//*
-   setup: function (data, namespaces, eventHandle) {
+   setup: function(data, namespaces, eventHandle) {
    // Event code.
 
    //this is the element to which the event handler is being bound.
@@ -911,7 +911,7 @@
    * This method, when executed, will always execute immediately after the
    * corresponding remove method executes.
    *//*
-   teardown: function (namespaces) {
+   teardown: function(namespaces) {
    // Event code.
 
    // this is the element from which the event handler is being unbound.
@@ -947,7 +947,7 @@
    *
    * This method, when executed, will always execute immediately after the corresponding setup method executes.
    *//*
-   add: function (handleObj) {
+   add: function(handleObj) {
    // Event code.
 
    // this === the element to which the event handler is being bound.
@@ -957,7 +957,7 @@
    // Save a reference to the bound event handler.
    var old_handler = handleObj.handler;
 
-   handleObj.handler = function (event) {
+   handleObj.handler = function(event) {
    // Modify event object here!
 
    // Call the originally-bound event handler and return its result.
@@ -982,7 +982,7 @@
    * This method, when executed, will always execute immediately before the corresponding teardown method executes.
    *//*
    ,
-   remove: function (handleObj) {
+   remove: function(handleObj) {
    // code
 
    // this === the element from which the event handler is being unbound.

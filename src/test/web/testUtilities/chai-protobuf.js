@@ -1,4 +1,4 @@
-define('chai-protobuf', ['generated_proto/commands', 'protobufUtils/sketchProtoConverter'], function (ProtoCommands, ProtoUtil) {
+define('chai-protobuf', ['generated_proto/commands', 'protobufUtils/sketchProtoConverter' ], function (ProtoCommands, ProtoUtil) {
     var Commands = ProtoCommands.protobuf.srl.commands;
 
     /**
