@@ -723,7 +723,8 @@ function(CommandException, SketchFramework, protoUtils, SketchException) {
          * @returns {SrlUpdate} the cleaned version of the update.
          */
         function cleanUpdate(update) {
-            return ProtoUtil.decode(update.toArrayBuffer(), Commands.SrlUpdate);
+            // now that versioning has been fixed this is not needed anymore.
+            return update;
         }
     }
 

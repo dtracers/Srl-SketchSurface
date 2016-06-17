@@ -271,7 +271,7 @@ function(UpdateManagerModule, ClassUtils, ProtoUtil, SketchException, Graphics, 
     /**
      * @returns {module:SketchGraphics} The graphics used by this sketch surface.
      */
-    SketchSurface.prototype.getGraphics = function () {
+    SketchSurface.prototype.getGraphics = function() {
         return this.graphics;
     };
 

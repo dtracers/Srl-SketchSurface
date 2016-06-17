@@ -1,6 +1,3 @@
-/**
- * Created by David Windows on 5/13/2016.
- */
 define('RecognitionPlugin', [], function() {
     /**
      * A plugin used to send updates to the server.
@@ -43,20 +40,15 @@ define('RecognitionPlugin', [], function() {
          * @param {String} updatePluginId - The id of the plugin that created this specific update.
          */
         this.addUpdate = function(update, redraw, updateIndex, updateType, updatePluginId) {
-            console.log('adding update!');
             if (updatePluginId !== pluginId) {
-                console.log('submitting an update to a remote computer for recognition');
                 recognitionManager.addUpdate(sketchId, update, function(err, msg) {
-                    console.log('It worked@!!!', err, msg);
                     if ((!ClassUtils.isUndefined(err) && err !== null) || isUndefined(msg)) {
-                        console.log('problems with the response');
                         return;
                     }
                     var updateList = msg.changes;
                     var updates = updateList.list;
                     for (var i = 0; i < updates.length; i++) {
                         var recognition_update = updates[i];
-                        console.log('add update', recognition_update);
                         updateManager.addUpdate(recognition_update, pluginId);
                     }
                 });

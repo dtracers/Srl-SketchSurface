@@ -1,4 +1,4 @@
-define('RealTimeSketchPlayback', ['CallbackBarrier/CallbackBarrier', 'sketchLibrary/ProtoSketchFramework',
+define('RealTimeSketchPlayback', [ 'CallbackBarrier/CallbackBarrier', 'sketchLibrary/ProtoSketchFramework',
         'protobufUtils/protobufUtils', 'sketchLibrary/SketchLibraryException' ],
 function(CallbackBarrier, SketchFramework, protoUtils, SketchException) {
 
@@ -32,6 +32,8 @@ function(CallbackBarrier, SketchFramework, protoUtils, SketchException) {
          * @type {Boolean}
          */
         var isPlaying = false;
+
+        var disable = false;
 
         /**
          * Whether or not the sketch was paused in the middle of a stroke.
@@ -80,7 +82,10 @@ function(CallbackBarrier, SketchFramework, protoUtils, SketchException) {
          * @param {Number} updateType - The type of the update.
          * @param {String} updatePluginId - The id of the plugin that created this specific update.
          */
-        this.addUpdate = function (update, redraw, updateIndex, updateType, updatePluginId) {
+        this.addUpdate = function(update, redraw, updateIndex, updateType, updatePluginId) {
+            if (disable) {
+                return;
+            }
             var commandList = update.commands;
 
             /**
@@ -97,7 +102,7 @@ function(CallbackBarrier, SketchFramework, protoUtils, SketchException) {
             for (var i = 0; i < commandList.length; i++) {
                 var command = commandList[i];
                 if (command.commandType === Commands.CommandType.ADD_STROKE && isPlaying) {
-                    (function () {
+                    (function() {
                         var stroke = command.decodedData;
                         pointList = stroke.getPoints();
 
@@ -114,7 +119,7 @@ function(CallbackBarrier, SketchFramework, protoUtils, SketchException) {
                             pointAdded = lastPointAdded;
                             strokePath = lastCreatedStroke;
                         }
-                        strokeBarrier.finalize(function () {
+                        strokeBarrier.finalize(function() {
                             strokePath.simplify();
                             commandFinished();
                         });
@@ -129,8 +134,8 @@ function(CallbackBarrier, SketchFramework, protoUtils, SketchException) {
                             lastPausedIndex = Number.MAX_VALUE;
                         }
                         for (var pointIndex = startingIndex; pointIndex < pointList.length; pointIndex++) {
-                            (function (index) {
-                                timeOut = setTimeout(function () {
+                            (function(index) {
+                                timeOut = setTimeout(function() {
                                     if (isPlaying) {
                                         strokePath.add(new ps.Point(pointList[index].getX(), pointList[index].getY()));
                                         graphics.getPaper().view.update();
@@ -169,7 +174,7 @@ function(CallbackBarrier, SketchFramework, protoUtils, SketchException) {
          * @param {Long} startTime - the time for when the sketch started.
          * @param {SketchSurface} surface - the surface.
          */
-        this.playNext = function (startTime, surface) {
+        this.playNext = function(startTime, surface) {
             if (!ClassUtils.isUndefined(startTime)) {
                 startingTime = startTime;
             }
@@ -181,6 +186,8 @@ function(CallbackBarrier, SketchFramework, protoUtils, SketchException) {
             }
             if (currentIndex >= length) {
                 graphics.setDrawUpdate(true);
+                // if we are done drawing then we should disable to prevent over drawing.
+                disable = true;
                 return;
             }
             var currentTime = (new Date().getTime());
@@ -204,7 +211,7 @@ function(CallbackBarrier, SketchFramework, protoUtils, SketchException) {
                 if (currentIndex === 1 || currentIndex === 0) {
                     delayTime = 0;
                 }
-                setTimeout(function () {
+                setTimeout(function() {
                     updateManager.addUpdate(updateList[currentIndex]);
                 }, delayTime);
             } else {
@@ -215,16 +222,18 @@ function(CallbackBarrier, SketchFramework, protoUtils, SketchException) {
         /**
          * Set isPlaying to false and pause the drawing.
          */
-        this.pauseNext = function () {
+        this.pauseNext = function() {
             currentIndex--;
             isPlaying = false;
+            disable = true;
         };
 
         /**
-         * Resets the playback with a new update list.  (but the same manager)
-         * @param {Array<SrlUpdate>} newUpdateList The update list that is being played back.
+         * Resets the playback with a new update list, but the same manager.
+         *
+         * @param {Array<SrlUpdate>} newUpdateList - The update list that is being played back.
          */
-        this.initialize = function (newUpdateList) {
+        this.initialize = function(newUpdateList) {
             updateManager.clearUpdates(false);
             updateList = newUpdateList;
             length = updateList.length;
@@ -236,11 +245,13 @@ function(CallbackBarrier, SketchFramework, protoUtils, SketchException) {
             lastPointAdded = undefined;
             pointList = undefined;
             startingTime = undefined;
+            disable = false;
         };
     }
 
     /**
      * Plays back the user's commands from the beginning.
+     *
      * Strokes are drawn in real time, in sequence.
      * The other commands, such as undo/redo/clear are also called in sequence.
      *
