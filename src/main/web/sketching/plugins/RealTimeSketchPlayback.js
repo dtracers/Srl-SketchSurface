@@ -124,7 +124,7 @@ function(CallbackBarrier, SketchFramework, protoUtils, SketchException) {
                             commandFinished();
                         });
 
-                        var startingTime = pointList[0].getTime();
+                        var strokeStartingTime = pointList[0].getTime();
                         var timeOut;
                         var timeOutList = [];
                         var startingIndex = 0;
@@ -152,7 +152,7 @@ function(CallbackBarrier, SketchFramework, protoUtils, SketchException) {
                                         pauseDuringStroke = true;
 
                                     }
-                                }, pointList[index].getTime() - startingTime);
+                                }, pointList[index].getTime() - strokeStartingTime);
                                 timeOutList.push(timeOut);
                             })(pointIndex);
                         } // end of for loop
@@ -263,5 +263,5 @@ function(CallbackBarrier, SketchFramework, protoUtils, SketchException) {
             return playback;
         },
         Playback: Playback
-    }
+    };
 });
