@@ -20,7 +20,7 @@
     "grunt-babel": ">=5.0.0",
     "babel-core": ">=5.0.0",
     "mocha-qunit-ui": "^0.1.2",
-    "webdriverio": "4.0.9",
+    "webdriverio": "4.2.5",
     "grunt-webdriver": "2.0.1",
     "selenium-standalone": "5.1.0",
     "mocha": "2.5.3",
@@ -35,7 +35,7 @@
     "hooker": "0.2.3",
     "qunit": "0.9.1",
     "requirejs": "2.2.0",
-    "recursive-readdir":"2.0.0",
+    "recursive-readdir": "2.0.0",
     "node-define": "0.1.1",
     "node-amd-require": "0.2.2"
   }
