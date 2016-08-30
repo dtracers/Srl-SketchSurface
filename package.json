@@ -27,7 +27,7 @@
     "xunit-file": "0.0.9",
     "grunt-mkdir": "1.0.0",
     "jquery": "2.2.4",
-    "jsdom": "9.2.1",
+    "jsdom": "9.4.4",
     "barrier": "dtracers/node-barrier#v1.0.1",
     "chai": "*",
     "protobufjs": "5.0.1",
@@ -35,7 +35,7 @@
     "hooker": "0.2.3",
     "qunit": "0.9.1",
     "requirejs": "2.2.0",
-    "recursive-readdir":"2.0.0",
+    "recursive-readdir": "2.0.0",
     "node-define": "0.1.1",
     "node-amd-require": "0.2.2"
   }
