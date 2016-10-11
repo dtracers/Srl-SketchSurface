@@ -23,7 +23,7 @@
     "webdriverio": "4.0.9",
     "grunt-webdriver": "2.0.1",
     "selenium-standalone": "5.1.0",
-    "mocha": "2.5.3",
+    "mocha": "3.1.2",
     "xunit-file": "0.0.9",
     "grunt-mkdir": "1.0.0",
     "jquery": "2.2.4",
