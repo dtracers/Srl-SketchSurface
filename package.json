@@ -30,7 +30,7 @@
     "jsdom": "9.2.1",
     "barrier": "dtracers/node-barrier#v1.0.1",
     "chai": "*",
-    "protobufjs": "5.0.1",
+    "protobufjs": "6.6.1",
     "grunt-exec": "0.4.6",
     "hooker": "0.2.3",
     "qunit": "0.9.1",
