@@ -33,7 +33,7 @@
     "protobufjs": "5.0.1",
     "grunt-exec": "0.4.6",
     "hooker": "0.2.3",
-    "qunit": "0.9.1",
+    "qunit": "1.0.0",
     "requirejs": "2.2.0",
     "recursive-readdir":"2.0.0",
     "node-define": "0.1.1",
